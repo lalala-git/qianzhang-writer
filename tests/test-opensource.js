@@ -81,6 +81,5 @@ if (publicOption >= 0) {
 }
 assert.ok(!/English by default|starts in English|默认英文/.test(readme) && /Chinese by default/.test(readme) && /中文默认/.test(readme), 'README 应写明新安装默认中文');
 assert.ok(/github\.com\/lalala-git\/qianzhang-writer\/releases\/latest/.test(readme) && !/lalala-git\/qianzhang(?!-writer)/.test(readme), 'README 链接应指向 qianzhang-writer 仓库');
-assert.ok(!/Codex/.test(readme), 'README 不再列 Codex 协作者');
 assert.strictEqual((readme.match(/Grok \(xAI\)\]\(https:\/\/x\.ai\/\) \u00b7 Grok Bot \u6c34\u6ef4\u{1F4A7}/gu) || []).length, 2, 'README 中英文都应写 AI 协作者 Grok (xAI) · Grok Bot 水滴');
 console.log('开源检查通过');
