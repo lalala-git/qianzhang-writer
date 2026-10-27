@@ -1,0 +1,200 @@
+{
+ "meta": {
+  "title": "青崖记（演示）",
+  "brief": {
+   "logline": "抄书少年偷学半张剑谱，牵出茶楼掌柜的旧事。",
+   "leads": [
+    "SHEN"
+   ]
+  }
+ },
+ "nodes": [
+  {
+   "id": "SHEN",
+   "name": "沈星河",
+   "type": "PERSON",
+   "status": "CANON",
+   "weight": 2.6,
+   "summary": "青崖山下的抄书少年，夜里偷学剑谱。",
+   "created_at": "2026-10-01T00:00:00.000Z",
+   "updated_at": "2026-10-01T00:00:00.000Z",
+   "source": {
+    "first_seen": "第1章",
+    "authority": "作者设定",
+    "origin": "author"
+   },
+   "aliases": "星河，阿河"
+  },
+  {
+   "id": "LIN",
+   "name": "林照",
+   "type": "PERSON",
+   "status": "CANON",
+   "weight": 2,
+   "summary": "听雨楼的账房先生，话少，算盘打得极快。",
+   "created_at": "2026-10-01T00:00:00.000Z",
+   "updated_at": "2026-10-01T00:00:00.000Z",
+   "source": {
+    "first_seen": "第1章",
+    "authority": "作者设定",
+    "origin": "author"
+   }
+  },
+  {
+   "id": "BAI",
+   "name": "白掌柜",
+   "type": "PERSON",
+   "status": "CANON",
+   "weight": 1.8,
+   "summary": "听雨楼掌柜，年轻时是剑宗弃徒。",
+   "created_at": "2026-10-01T00:00:00.000Z",
+   "updated_at": "2026-10-01T00:00:00.000Z",
+   "source": {
+    "first_seen": "第1章",
+    "authority": "作者设定",
+    "origin": "author"
+   }
+  },
+  {
+   "id": "ZONG",
+   "name": "青崖剑宗",
+   "type": "GROUP",
+   "status": "CANON",
+   "weight": 1.6,
+   "summary": "山上的剑宗，每三年开一次山门。",
+   "created_at": "2026-10-01T00:00:00.000Z",
+   "updated_at": "2026-10-01T00:00:00.000Z",
+   "source": {
+    "first_seen": "第1章",
+    "authority": "作者设定",
+    "origin": "author"
+   }
+  },
+  {
+   "id": "HILL",
+   "name": "青崖山",
+   "type": "PLACE",
+   "status": "CANON",
+   "weight": 1.4,
+   "summary": "终年起雾的山，山腰有一道断崖。",
+   "created_at": "2026-10-01T00:00:00.000Z",
+   "updated_at": "2026-10-01T00:00:00.000Z",
+   "source": {
+    "first_seen": "第1章",
+    "authority": "作者设定",
+    "origin": "author"
+   }
+  },
+  {
+   "id": "TOWER",
+   "name": "听雨楼",
+   "type": "PLACE",
+   "status": "CANON",
+   "weight": 1.4,
+   "summary": "山脚的茶楼兼书铺，沈星河在这里抄书。",
+   "created_at": "2026-10-01T00:00:00.000Z",
+   "updated_at": "2026-10-01T00:00:00.000Z",
+   "source": {
+    "first_seen": "第1章",
+    "authority": "作者设定",
+    "origin": "author"
+   }
+  },
+  {
+   "id": "RULE1",
+   "name": "剑谱不可外传",
+   "type": "RULE",
+   "status": "CANON",
+   "weight": 1.5,
+   "summary": "剑宗的剑谱只传入门弟子，外人抄录者废去修为。",
+   "created_at": "2026-10-01T00:00:00.000Z",
+   "updated_at": "2026-10-01T00:00:00.000Z",
+   "source": {
+    "first_seen": "第1章",
+    "authority": "作者设定",
+    "origin": "author"
+   }
+  }
+ ],
+ "relations": [
+  {
+   "source": "SHEN",
+   "target": "LIN",
+   "label": "同在听雨楼做工",
+   "type": "knows",
+   "certainty": "confirmed"
+  },
+  {
+   "source": "BAI",
+   "target": "SHEN",
+   "label": "收留",
+   "type": "mentor",
+   "certainty": "confirmed"
+  },
+  {
+   "source": "BAI",
+   "target": "ZONG",
+   "label": "曾是弟子",
+   "type": "member_of",
+   "certainty": "confirmed"
+  },
+  {
+   "source": "LIN",
+   "target": "BAI",
+   "label": "替他记账",
+   "type": "works_for",
+   "certainty": "confirmed"
+  }
+ ],
+ "timeline": [],
+ "chapters": [
+  {
+   "id": "demo-ch-1",
+   "title": "第一章 半张剑谱",
+   "text": "雾从青崖山上滚下来的时候，听雨楼刚上第一壶茶。\n沈星河坐在柜台后面抄书，笔尖压得很低，像怕惊醒纸上的字。他抄的是一本《山行杂记》，可夹在书页里的，是半张剑谱。\n“又在抄什么？”林照拨着算盘，头也没抬。\n“杂记。”沈星河说。\n“杂记里有剑？”林照停了一下，算珠还卡在半空，“你手腕一直在转。”\n沈星河没有答话。他把那半张纸往袖子里推了推，墨还没干，袖口染了一小块黑。\n楼上传来白掌柜的咳嗽声。那咳嗽很轻，可整座茶楼都安静了。\n“星河，”白掌柜在楼梯口站着，手里拎着一盏没点的灯，“今晚别去断崖。”\n沈星河抬起头，看见掌柜的眼睛里有一点他看不懂的东西，像是旧伤，又像是怕。",
+   "order": 0,
+   "volumeId": "demo-v1",
+   "outline": "沈星河在听雨楼偷抄剑谱；白掌柜警告他别去断崖。",
+   "created_at": "2026-10-01T00:00:00.000Z",
+   "updated_at": "2026-10-01T00:00:00.000Z"
+  },
+  {
+   "id": "demo-ch-2",
+   "title": "第二章 开山日",
+   "text": "三年一次的开山日，青崖剑宗的钟声响了九下。\n山门前挤满了人，有背着行囊的少年，也有被爹娘推着往前走的孩子。沈星河站在最后，手里攥着那半张剑谱。\n“名字。”守门的弟子问。\n“沈星河。”\n“哪里人？”\n“山下，听雨楼。”\n那弟子的笔顿住了。他看了沈星河一眼，又看了看他袖口那块洗不掉的墨迹，什么也没说，只在名册上画了一个圈。\n林照不知什么时候也来了，站在人群外面，怀里抱着算盘，像是来收账的。\n“你来做什么？”沈星河问。\n“掌柜让我带句话。”林照说，“他说，那个圈，是他当年也被画过的。”\n钟声停了。山雾里有人拔剑，剑鸣很长，长得像一声叹气。",
+   "order": 1,
+   "volumeId": "demo-v1",
+   "outline": "剑宗开山门，名册上的圈。",
+   "created_at": "2026-10-01T00:00:00.000Z",
+   "updated_at": "2026-10-01T00:00:00.000Z"
+  },
+  {
+   "id": "demo-ch-3",
+   "title": "第三章 断崖",
+   "text": "断崖上的风比山下冷得多。\n沈星河照着剑谱练到第七式，手腕忽然一麻，剑脱手飞了出去，插进崖边的石缝里，嗡嗡地抖。\n“第七式不是这样练的。”\n白掌柜从雾里走出来，没有拎灯。他伸手拔出那柄剑，在掌心掂了掂。\n“你抄的那半张，是我撕下来的。”他说，“另外半张，写的是怎么收剑。”\n沈星河愣住了：“剑谱不可外传，抄录者要废去修为——”\n“所以我才只剩一个茶楼。”白掌柜笑了笑，把剑递还给他，“明天开始，每晚来这里。收剑的那半张，我教你。”\n远处，林照的算盘声隔着雾传过来，一下，一下，像在替谁记着一笔很久以前的账。",
+   "order": 2,
+   "volumeId": "demo-v1",
+   "outline": "白掌柜承认剑谱来历，答应教收剑。",
+   "created_at": "2026-10-01T00:00:00.000Z",
+   "updated_at": "2026-10-01T00:00:00.000Z"
+  }
+ ],
+ "volumes": [
+  {
+   "id": "demo-v1",
+   "title": "第一卷 山雾",
+   "order": 0
+  }
+ ],
+ "foreshadows": [
+  {
+   "id": "demo-fs-1",
+   "title": "名册上的圈是什么意思", "note": "白掌柜当年也被画过圈",
+   "plantedIn": "demo-ch-2",
+   "dueChapter": 5,
+   "created_at": "2026-10-01T00:00:00.000Z"
+  }
+ ],
+ "format_version": 2,
+ "project_id": "demo-book"
+}

@@ -1,0 +1,25 @@
+# 千章 — 代码开源，作品私有
+**/.backup/
+*.bak
+/private/
+/projects/
+node_modules/
+npm-debug.log*
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.tmp
+# 用户作品和验证临时产物不是源码，不应随提交公开
+/data/projects/
+/_scratch/
+/.test-tmp/
+/dist/
+# 作品目录与备份（任何位置）
+/data/
+*.backup
+*.log
+.env
+.env.*
