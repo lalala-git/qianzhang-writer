@@ -26,6 +26,8 @@ Author: **lalala.gpt** · AI development collaborator: **[Grok (xAI)](https://x.
 
 > Developed with Grok by xAI. Grok assisted with the development of this project.
 
+Additional contributor: **[Codex (OpenAI)](https://github.com/codex)** — documentation, earlier English localization, and release preparation.
+
 > For why each feature exists, see [docs/pain-points.md](docs/pain-points.md) (in Chinese).
 
 ![Home](docs/screenshots/home.jpg)
@@ -153,6 +155,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md); release notes are in [CHANGELOG.md](CHAN
 作者：**lalala.gpt** · AI 开发协作者：**[Grok (xAI)](https://x.ai/) · Grok Bot 水滴💧**。
 
 > Grok（xAI）参与本项目开发。
+
+其他协作者：**[Codex（OpenAI）](https://github.com/codex)**，参与文档、早期英文适配及发布准备。
 
 > 为什么做这些功能，见 [docs/pain-points.md（网文作者痛点清单）](docs/pain-points.md)。
 
