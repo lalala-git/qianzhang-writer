@@ -128,6 +128,8 @@ The browser check needs Chrome, Edge or Chromium installed (point to it with `CH
 
 See [CONTRIBUTING.md](CONTRIBUTING.md); release notes are in [CHANGELOG.md](CHANGELOG.md).
 
+To report a problem, [open an issue](https://github.com/lalala-git/qianzhang-writer/issues/new) with your operating system, release version, steps to reproduce, and expected result. Remove API keys, manuscript text, and personal paths from screenshots or logs before sharing.
+
 ---
 
 ## 简体中文
@@ -257,3 +259,5 @@ node tests/browser-smoke.js [截图目录]   # 真实浏览器逐页检查
 ## 参与
 
 见 [CONTRIBUTING.md](CONTRIBUTING.md)；更新记录见 [CHANGELOG.md](CHANGELOG.md)。
+
+反馈问题时，请在 [Issue](https://github.com/lalala-git/qianzhang-writer/issues/new) 中写明系统、版本、复现步骤和预期结果；分享截图或日志前，请去掉密钥、作品原文和个人路径。
