@@ -22,7 +22,7 @@ English · [简体中文](#简体中文)
 
 Keep the `data` folder beside the exe: it contains your works, backups and app settings. Move the whole folder when moving computers; when upgrading, close Qianzhang and replace the exe while keeping `data`. macOS, Linux and developers can [run from source](#install-and-run-from-source).
 
-Author: **lalala.gpt** · AI development collaborator: **[Grok (xAI)](https://x.ai/) · Grok Bot 水滴💧**.
+Author: **lalala.gpt** · AI development collaborator: **[Grok (xAI)](https://x.ai/) · Grok Bot 水滴💧** ([GitHub app](https://github.com/apps/grok-by-xai)).
 
 > Developed with Grok by xAI. Grok assisted with the development of this project.
 
@@ -152,7 +152,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md); release notes are in [CHANGELOG.md](CHAN
 
 请保留 exe 旁边的 `data` 文件夹，作品、备份和程序设置都在其中。换电脑时搬走整个文件夹；升级时先关闭千章，再替换 exe，保留 `data`。macOS、Linux 和开发者可按下方说明从源码启动。
 
-作者：**lalala.gpt** · AI 开发协作者：**[Grok (xAI)](https://x.ai/) · Grok Bot 水滴💧**。
+作者：**lalala.gpt** · AI 开发协作者：**[Grok (xAI)](https://x.ai/) · Grok Bot 水滴💧**（[GitHub 应用](https://github.com/apps/grok-by-xai)）。
 
 > Grok（xAI）参与本项目开发。
 
