@@ -15,7 +15,7 @@ assert.ok(!SKIP.test('ui/app.js'));
 const L = fs.readFileSync(path.join(__dirname, '..', 'tools', 'pack', 'launcher.js'), 'utf8');
 assert.ok(/basename\(exeDir\)\.toLowerCase\(\) === 'dist'/.test(L) && /path\.join\(repo, 'data'\)/.test(L) && /process\.env\.QZ_DATA = dataDir/.test(L));
 (async () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'qz-pack-')), app = path.join(tmp, 'app'), data = path.join(tmp, 'repo-data');
+  const tmp = (fs.mkdirSync(path.join(__dirname, '..', '.test-tmp'), { recursive:true }), fs.mkdtempSync(path.join(__dirname, '..', '.test-tmp', 'qz-pack-'))), app = path.join(tmp, 'app'), data = path.join(tmp, 'repo-data');
   fs.mkdirSync(path.join(app, 'workspace'), { recursive: true }); fs.writeFileSync(path.join(app, 'workspace', 'index.html'), 'x');
   fs.mkdirSync(path.join(data, 'projects'), { recursive: true });
   const book = { project_id:'my-old-book', format_version:1, meta:{ title:'老书' }, nodes:[], relations:[] };
@@ -35,7 +35,7 @@ assert.ok(/basename\(exeDir\)\.toLowerCase\(\) === 'dist'/.test(L) && /path\.joi
 /* PE 子系统改成图形界面（用一个最小的假 PE 头测试） */
 {
   const { guiSubsystem } = require('../tools/pack/build.js');
-  const f = path.join(os.tmpdir(), 'qz-pe-' + process.pid + '.bin'), b = Buffer.alloc(512);
+  const f = path.join(__dirname, '..', '.test-tmp', 'qz-pe-' + process.pid + '.bin'), b = Buffer.alloc(512);
   b.writeUInt32LE(0x80, 0x3c); b.writeUInt32LE(0x4550, 0x80); b.writeUInt16LE(3, 0x80 + 24 + 68); fs.writeFileSync(f, b);
   assert.strictEqual(guiSubsystem(f), 3); assert.strictEqual(fs.readFileSync(f).readUInt16LE(0x80 + 24 + 68), 2); fs.unlinkSync(f);
   assert.ok(/--app=/.test(L) && /--user-data-dir=/.test(L) && /instance\.json/.test(L) && /7811/.test(L), '启动器应开独立窗口、单实例、避开 7801');

@@ -37,9 +37,23 @@
     },
     /** 连上本地服务：AI 密钥改由本地服务加密保存；旧版存在浏览器里的明文密钥搬过去后删除 */
     attachKeys: function () {
+      this.renderQuit();
       const AI = root.QZAI; if (!AI || !this.storage.server) return Promise.resolve();
       const st = this.storage;
       return AI.attachVault({ get:() => st.aiKey('get'), set:k => st.aiKey('set', k) }).then(r => { if (r && r.error) UI.toast(r.error, 'err'); }).catch(() => {});
+    },
+    /** 由 Qianzhang.exe 启动时，侧栏常驻「退出千章」；在默认浏览器里打开时关页面不会退出，这是主要的退出方式 */
+    renderQuit: function () {
+      const host = document.getElementById('qz-quit'); if (!host) return;
+      host.hidden = !this.storage.app; host.classList.toggle('attn', this.storage.mode === 'browser');
+    },
+    quitApp: function () {
+      return UI.confirm('退出千章', '会先保存，然后关闭千章的本地服务。之后这个页面就不能再保存了，可以直接关掉。', '退出').then(ok => {
+        if (!ok) return; return Promise.resolve(this.flush && this.flush()).catch(() => {}).then(() => this.storage.quit()).then(done => {
+          if (!done) return UI.toast('没能退出：本地服务没有响应', 'err');
+          document.body.innerHTML = '<div class="quit-done"><h1>千章已退出</h1><p>可以关闭这个页面了。再次使用时，双击 Qianzhang.exe。</p></div>';
+        }).catch(() => UI.toast('没能退出：本地服务没有响应', 'err'));
+      });
     },
     /* ---------- 作品 ---------- */
     open: function (id) {
@@ -179,7 +193,8 @@
       return '<aside class="sidebar" id="sidebar"><a class="brand" href="#/home" title="概览"><b class="wordmark">千章</b><small>陪你写到第一千章</small></a>'
         + '<button class="project-switch" data-act="home.switch" id="project-switch" title="切换作品（Alt+B）" aria-haspopup="listbox"></button>'
         + '<button class="pal-btn" data-act="palette" title="命令面板（Ctrl+K）">' + UI.icon('search') + '<span>搜索</span><kbd>Ctrl K</kbd></button>' + '<nav class="nav" id="nav"></nav><div class="side-foot"><div class="save-state" id="save-state"><i></i><span>已同步</span></div>'
-        + '<a class="icon-btn" href="#/settings" id="settings-btn" title="设置（备份、回收站、外观）" aria-label="设置">' + UI.icon('settings') + '</a><button class="icon-btn" data-act="theme" id="theme-btn" title="切换深浅色"></button></div></aside>'
+        + '<a class="icon-btn" href="#/settings" id="settings-btn" title="设置（备份、回收站、外观）" aria-label="设置">' + UI.icon('settings') + '</a><button class="icon-btn" data-act="theme" id="theme-btn" title="切换深浅色"></button></div>'
+        + '<button class="btn sm quit-btn" data-act="quit" id="qz-quit" hidden title="保存并关闭千章">' + UI.icon('x') + '退出千章</button></aside>'
         + '<main class="main" id="main"></main><div id="toasts" class="toasts"></div>';
     },
     refreshChrome: function () {
@@ -201,7 +216,7 @@
         if (!e.target.closest('details.menu')) document.querySelectorAll('details.menu[open]').forEach(d => d.removeAttribute('open'));
         const t = e.target.closest('[data-act]'); if (!t || t.disabled) return;
         const [a, b] = t.dataset.act.split('.');
-        if (!b) { if (a === 'theme') this.toggleTheme(); if (a === 'palette' && root.QZPalette) root.QZPalette.open(this); return; }
+        if (!b) { if (a === 'theme') this.toggleTheme(); if (a === 'palette' && root.QZPalette) root.QZPalette.open(this); if (a === 'quit') this.quitApp(); return; }
         const P = this.pages()[a], fn = P && P.actions && P.actions[b];
         if (fn) { e.preventDefault(); fn(this, t, e); }
       });

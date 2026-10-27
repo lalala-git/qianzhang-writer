@@ -990,3 +990,28 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px soli
 .cp-badge[hidden]{display:none}
 .check-row{display:flex;gap:8px;align-items:center;margin:10px 0 4px}
 .editor-bar #ch-vol{max-width:6em;text-overflow:ellipsis}
+/* ---------- 界面细节：书架、写作页、设置 ---------- */
+/* 书架 */
+.hero.empty-shelf{background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 7%,var(--surface)),var(--surface));border-style:dashed}
+.hero.empty-shelf .hero-stats{max-width:34em;line-height:1.7}
+.hero .btn.primary.lg{box-shadow:0 6px 16px -8px color-mix(in srgb,var(--primary) 70%,transparent);transition:transform .15s,box-shadow .15s}
+.hero .btn.primary.lg:hover{transform:translateY(-1px)}
+.panel{transition:box-shadow .2s}
+/* 写作页 */
+.chapter-item{transition:background .15s}
+.chapter-item .ch-words{font-variant-numeric:tabular-nums;opacity:.75}
+.chapter-text{caret-color:var(--primary)}
+.chapter-text::selection{background:color-mix(in srgb,var(--primary) 22%,transparent)}
+.chapter-title{letter-spacing:.02em}
+.check-panel .check-sec+.check-sec{border-top:1px dashed var(--border)}
+/* 设置 */
+.panel-head h2{letter-spacing:.01em}
+.panel-head p.muted{line-height:1.65;max-width:46em}
+.form-grid .field>span{color:var(--text-2)}
+.input:focus-visible,select.input:focus-visible{outline:2px solid color-mix(in srgb,var(--primary) 45%,transparent);outline-offset:1px}
+.theme-opt{transition:border-color .15s,transform .15s}.theme-opt:hover{transform:translateY(-1px)}
+/* 退出按钮（由 Qianzhang.exe 启动时显示） */
+.quit-btn{width:100%;justify-content:center;margin-top:8px;color:var(--text-2)}
+.quit-btn.attn{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 35%,var(--border))}
+.quit-done{max-width:520px;margin:18vh auto;padding:28px 32px;text-align:center;font-family:system-ui,sans-serif}
+.quit-done h1{font-size:24px;margin:0 0 10px}

@@ -514,6 +514,24 @@ async function main() {
     return r; })()`);
   if (!cpg || cpg.err || !(cpg.startOff && cpg.asked && cpg.declinedOff && cpg.onBadge && cpg.noReask && cpg.offByBadge && cpg.notPersisted)) errors.push('陪写确认/指示异常：' + JSON.stringify(cpg));
   check('陪写默认关、首次确认、常驻指示一键关', JSON.stringify(cpg));
+  // 退出按钮：源码运行时隐藏；由 exe 在默认浏览器里启动时显示并醒目；点了先确认，取消不退出（不真的调用退出）
+  const qz = await js(`(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms)), st = QZ.storage, app0 = st.app, mode0 = st.mode, quit0 = st.quit, r = {}; let called = 0;
+    try {
+      const b = () => document.getElementById('qz-quit');
+      r.hiddenFromSource = !!b() && b().hidden && !app0;
+      st.app = true; st.mode = 'browser'; st.quit = () => { called++; return Promise.resolve(true); }; QZ.renderQuit();
+      r.shownInBrowserMode = !b().hidden && b().classList.contains('attn') && b().getBoundingClientRect().height > 0;
+      b().click(); await sleep(150);
+      r.asks = !!document.querySelector('.modal-wrap .modal');
+      [...document.querySelectorAll('.modal-wrap button')].find(x => x.textContent.trim() === '取消').click(); await sleep(250);
+      r.cancelKeeps = called === 0 && !!document.getElementById('qz-quit');
+    } catch (e) { r.err = e.message; }
+    st.app = app0; st.mode = mode0; st.quit = quit0; QZ.renderQuit();
+    r.restored = document.getElementById('qz-quit').hidden;
+    return r; })()`);
+  if (!qz || qz.err || !(qz.hiddenFromSource && qz.shownInBrowserMode && qz.asks && qz.cancelKeeps && qz.restored)) errors.push('退出按钮异常：' + JSON.stringify(qz));
+  check('退出按钮：源码运行隐藏、exe 默认浏览器模式显示、先确认', JSON.stringify(qz));
   // 空书逐页渲染、按钮都有可读名字、百万字书切页耗时
   const au = await js(`(async () => {
     const real = QZ.project, sleep = ms => new Promise(r => setTimeout(r, ms)), out = { empty:[], unnamed:[], slow:[] };

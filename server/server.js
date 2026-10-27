@@ -93,8 +93,8 @@ const server = http.createServer(function (req, res) {
   try { url = new URL(req.url, 'http://' + req.headers.host); }
   catch (e) { return json(res, 400, { ok:false, error:'请求地址无效' }); }
   if (url.pathname === '/favicon.ico') { res.writeHead(204); return res.end(); }
-  if (url.pathname === '/api/ping' && req.method === 'GET')
-    return json(res, 200, { ok:true, token:TOKEN });
+  if (url.pathname === '/api/ping' && req.method === 'GET') /* app：由桌面程序启动（可从页面退出）；mode：window 独立窗口 / browser 默认浏览器 */
+    return json(res, 200, { ok:true, token:TOKEN, app:typeof global.__qzQuit === 'function', mode:global.__qzMode || null });
   /* AI 密钥：加密存在 data/app，页面只在需要时向本地服务要（不进 localStorage、作品或备份） */
   if (url.pathname === '/api/ai-key' && req.method === 'POST') {
     if (!authorized(req)) return json(res, 403, { ok:false, error:'写入授权失败' });
@@ -103,6 +103,12 @@ const server = http.createServer(function (req, res) {
       json(res, 200, Object.assign({ ok:!r.error }, r));
     }).catch(e => json(res, 400, { ok:false, error:e.message }));
     return;
+  }
+  /* 退出：只有桌面程序注册了退出函数时才有效（源码运行用 Ctrl+C） */
+  if (url.pathname === '/api/quit' && req.method === 'POST') {
+    if (!authorized(req)) return json(res, 403, { ok:false, error:'写入授权失败' });
+    if (typeof global.__qzQuit !== 'function') return json(res, 404, { ok:false, error:'源码运行请在终端按 Ctrl+C 结束' });
+    json(res, 200, { ok:true }); setTimeout(() => global.__qzQuit('page'), 200); return;
   }
   if (url.pathname === '/api/projects' && req.method === 'GET') {
     try {

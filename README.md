@@ -41,7 +41,7 @@ Additional contributor: **[Codex (OpenAI)](https://github.com/codex)** — docum
 ## Platforms and what has been verified
 
 - **Windows x64**: portable exe, built and launched on a real Windows PC.
-- **macOS and Linux**: no packaged app; [run from source](#install-and-run-from-source) with Node.js. Unit tests run on Linux in CI, but Qianzhang has **not been tested on real macOS or Linux desktop hardware**.
+- **macOS and Linux**: no packaged app; [run from source](#install-and-run-from-source) with Node.js. The CI tests run on GitHub's Linux, macOS and Windows runners, and the `source-packages` workflow builds macOS / Linux source packages with a start script (`start.sh`; `Qianzhang.command` on macOS) after the tests pass. These are cloud runners only: Qianzhang has **not been tested on real macOS or Linux desktop hardware**.
 - **AI features**: tested only against simulated OpenAI-compatible responses in the automated tests, **not verified against a real AI service**. Provider-specific behaviour (DeepSeek, OpenAI, Ollama…) may differ; please report problems.
 
 ## What it does
@@ -85,7 +85,7 @@ On first launch the shelf is empty: click 新建作品 (New work). The source se
 
 For Windows packaging, Node.js 22 or newer is recommended; the Node.js 18 requirement for running from source does not apply to packaging. The build uses Node SEA and downloads pinned `rcedit@4.0.1` and `postject@1.0.0-alpha.6` through npm/npx, so internet access is required during the build. Running from source does not require these tools. These are build requirements, not a claim that the exe has been tested with every Node version.
 
-On Windows, `node tools/pack/build.js` produces `dist/Qianzhang.exe` (with an icon and no console window). Double-click it and it opens a standalone 千章 window using the installed Edge or Chrome (no address bar or tabs); closing that window quits the app. Double-clicking again only opens another window instead of starting a second copy. If neither browser is installed, or the page in the app window has not started within 20 seconds (for example because security software blocked it), it falls back to the default browser; closing the page then does not quit the app, so end it from Task Manager. The app looks for a free port starting at 7811, so it does not clash with a development server on 7801. Run from the repository's `dist/`, it uses the repository's `data/`; copied elsewhere, it keeps works in a `data/` folder next to the exe. Logs and window settings live in `data/app/`, separate from your works. If the window stays blank, the exe's folder probably carries a low-integrity label (the app shows a notice); copy the exe elsewhere or run `icacls Qianzhang.exe /setintegritylevel M`. Works and backups are never packed into the exe. The script runs on Windows only; on macOS / Linux use `node server/server.js .` as above.
+On Windows, `node tools/pack/build.js` produces `dist/Qianzhang.exe` (with an icon and no console window). Double-click it and it opens a standalone 千章 window using the installed Edge or Chrome (no address bar or tabs); closing that window quits the app. Double-clicking again only opens another window instead of starting a second copy. If neither browser is installed, or the page in the app window has not started within 20 seconds (for example because security software blocked it), it falls back to the default browser; closing the page then does not quit the app. In that case Windows first shows a note saying so (when no browser is found), a 千章 icon appears in the notification area (tray), and the page shows a "Quit Qianzhang" button at the bottom of the sidebar: use either the button or the tray icon's menu → 退出千章 to save and quit. When started from the exe, the button is also there in the standalone window. The app looks for a free port starting at 7811, so it does not clash with a development server on 7801. Run from the repository's `dist/`, it uses the repository's `data/`; copied elsewhere, it keeps works in a `data/` folder next to the exe. Logs and window settings live in `data/app/`, separate from your works. If the window stays blank, the exe's folder probably carries a low-integrity label (the app shows a notice); copy the exe elsewhere or run `icacls Qianzhang.exe /setintegritylevel M`. Works and backups are never packed into the exe. The script runs on Windows only; on macOS / Linux use `node server/server.js .` as above.
 
 ## Pages
 
@@ -173,7 +173,7 @@ To report a problem, [open an issue](https://github.com/lalala-git/qianzhang-wri
 ## 支持的平台与验证范围
 
 - **Windows x64**：便携版 exe，已在真实 Windows 电脑上构建并启动过。
-- **macOS 和 Linux**：没有打包程序，请[从源码启动](#从源码安装与启动)（需要 Node.js）。CI 会在 Linux 上跑单元测试，但**没有在真实的 macOS 或 Linux 桌面硬件上测试过**。
+- **macOS 和 Linux**：没有打包程序，请[从源码启动](#从源码安装与启动)（需要 Node.js）。CI 会在 GitHub 的 Linux、macOS 和 Windows 机器上跑测试，`source-packages` 工作流在测试通过后打出带启动脚本的 macOS / Linux 源码包（`start.sh`，macOS 另有 `Qianzhang.command`）。这些都只是云端机器：**没有在真实的 macOS 或 Linux 桌面硬件上测试过**。
 - **AI 功能**：只在自动化测试里用模拟的 OpenAI 兼容响应验证过，**没有拿真实的 AI 服务验证**。不同服务商（DeepSeek、OpenAI、Ollama……）的表现可能不同，遇到问题欢迎反馈。
 
 ## 能做什么
@@ -217,7 +217,7 @@ node server/server.js .
 
 Windows 打包建议使用 Node.js 22 或更新版本；Node.js 18 的源码启动要求不适用于单文件打包。构建使用 Node SEA，并通过 npm/npx 联网获取固定版本的 `rcedit@4.0.1` 和 `postject@1.0.0-alpha.6`；源码启动不需要这些工具。此处是构建要求说明，不表示已经完成每个 Node 版本的 exe 验证。
 
-在 Windows 上运行 `node tools/pack/build.js`，会生成 `dist/Qianzhang.exe`（带图标，不弹命令行窗口）。双击后它用本机的 Edge 或 Chrome 打开一个独立的「千章」窗口（没有地址栏和标签页）；关掉这个窗口，千章就退出。再次双击只会再打开一个窗口，不会重复启动。两种浏览器都没有、或者应用窗口里的页面 20 秒内没能运行（比如被安全软件拦截）时，改用默认浏览器打开，这时关页面不会自动退出，可在任务管理器里结束。程序从 7811 起找空闲端口，不和开发用的 7801 冲突。从仓库的 `dist/` 里运行时，它直接用仓库的 `data/`；单独拷走时，作品存在 exe 旁边的 `data/` 里。日志和窗口设置放在 `data/app/`，与作品分开。如果窗口一片空白，多半是 exe 所在文件夹带“低完整性”标记（程序会弹窗提示），把 exe 复制到别处，或运行 `icacls Qianzhang.exe /setintegritylevel M`。作品和备份不会被打进 exe。这个脚本只能在 Windows 上运行，在 macOS / Linux 上请直接用上面的 `node server/server.js .`。
+在 Windows 上运行 `node tools/pack/build.js`，会生成 `dist/Qianzhang.exe`（带图标，不弹命令行窗口）。双击后它用本机的 Edge 或 Chrome 打开一个独立的「千章」窗口（没有地址栏和标签页）；关掉这个窗口，千章就退出。再次双击只会再打开一个窗口，不会重复启动。两种浏览器都没有、或者应用窗口里的页面 20 秒内没能运行（比如被安全软件拦截）时，改用默认浏览器打开，这时关页面不会自动退出：没找到浏览器时会先弹窗说明，右下角托盘会出现千章图标，页面侧栏底部也会出现「退出千章」按钮，点按钮或托盘图标菜单里的「退出千章」即可保存并退出。由 exe 启动时，独立窗口里也有这个按钮。程序从 7811 起找空闲端口，不和开发用的 7801 冲突。从仓库的 `dist/` 里运行时，它直接用仓库的 `data/`；单独拷走时，作品存在 exe 旁边的 `data/` 里。日志和窗口设置放在 `data/app/`，与作品分开。如果窗口一片空白，多半是 exe 所在文件夹带“低完整性”标记（程序会弹窗提示），把 exe 复制到别处，或运行 `icacls Qianzhang.exe /setintegritylevel M`。作品和备份不会被打进 exe。这个脚本只能在 Windows 上运行，在 macOS / Linux 上请直接用上面的 `node server/server.js .`。
 
 ## 页面
 

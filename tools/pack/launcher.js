@@ -1,4 +1,5 @@
-/*! 千章 · Windows 桌面程序（Node SEA）：解压程序文件、启动本地服务、用 Edge/Chrome 的独立应用窗口打开；窗口关了就退出 */
+/*! 千章 · Windows 桌面程序（Node SEA）：解压程序文件、启动本地服务、用 Edge/Chrome 的独立应用窗口打开；窗口关了就退出。
+ *  没有 Edge/Chrome 或窗口被拦截时改用默认浏览器，并提供托盘图标和页面里的「退出千章」 */
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -39,6 +40,49 @@ const profile = path.join(appDir, 'window-profile');
 function alert(msg, keep) { /* 出错时弹个对话框（没有控制台可看） */
   execFile('powershell', ['-NoProfile', '-WindowStyle', 'Hidden', '-Command', 'Add-Type -AssemblyName PresentationFramework;[System.Windows.MessageBox]::Show($env:QZ_MSG, "千章")'], { windowsHide: true, env: Object.assign({}, process.env, { QZ_MSG: msg }) }, () => { if (!keep) process.exit(1); });
 }
+/* 当前模式：window = 独立应用窗口（关窗即退出）；browser = 默认浏览器（关页面不会退出，用托盘或页面按钮退出） */
+global.__qzMode = 'window';
+let winChild = null, tray = null, quitting = false;
+/** 干净退出：页面按钮（/api/quit）或托盘菜单调用 */
+global.__qzQuit = function (from) {
+  if (quitting) return; quitting = true;
+  log('退出（' + (from || '?') + '）');
+  try { fs.unlinkSync(lockFile); } catch (e) {}
+  try { if (tray) tray.kill(); } catch (e) {}
+  try { if (winChild && winChild.exitCode == null) winChild.kill(); } catch (e) {}
+  setTimeout(() => process.exit(0), 300);
+};
+process.on('exit', () => { try { if (tray) tray.kill(); } catch (e) {} });
+/* 托盘图标（PowerShell + WinForms）：菜单「打开千章 / 退出千章」，通过标准输出告诉本进程 */
+const TRAY_PS = [
+  'Add-Type -AssemblyName System.Windows.Forms,System.Drawing',
+  '$n = New-Object System.Windows.Forms.NotifyIcon',
+  'try { $n.Icon = [System.Drawing.Icon]::ExtractAssociatedIcon($env:QZ_EXE) } catch { $n.Icon = [System.Drawing.SystemIcons]::Application }',
+  "$n.Text = '千章（正在运行）'",
+  '$m = New-Object System.Windows.Forms.ContextMenuStrip',
+  "$o = $m.Items.Add('打开千章'); $o.add_Click({ [Console]::Out.WriteLine('open'); [Console]::Out.Flush() })",
+  "$q = $m.Items.Add('退出千章'); $q.add_Click({ [Console]::Out.WriteLine('quit'); [Console]::Out.Flush(); $n.Visible = $false; [System.Windows.Forms.Application]::Exit() })",
+  "$n.ContextMenuStrip = $m; $n.add_DoubleClick({ [Console]::Out.WriteLine('open'); [Console]::Out.Flush() })",
+  '$n.Visible = $true',
+  "$n.ShowBalloonTip(6000, '千章', '千章在默认浏览器里运行，关掉网页不会退出。要退出，请点页面左下角或这里的「退出千章」。', 'Info')",
+  '[System.Windows.Forms.Application]::Run(); $n.Dispose()',
+].join('; ');
+function startTray(url) {
+  if (tray || process.platform !== 'win32' || process.env.QZ_NO_TRAY) return;
+  try {
+    tray = spawn('powershell', ['-NoProfile', '-STA', '-WindowStyle', 'Hidden', '-Command', TRAY_PS], { windowsHide: true, stdio: ['ignore', 'pipe', 'ignore'], env: Object.assign({}, process.env, { QZ_EXE: process.execPath }) });
+    let buf = '';
+    tray.stdout.on('data', c => { buf += c; let i; while ((i = buf.indexOf('\n')) >= 0) { const cmd = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+      if (cmd === 'quit') global.__qzQuit('tray'); else if (cmd === 'open') openDefault(url); } });
+    tray.on('exit', () => { tray = null; });
+    log('托盘图标已显示');
+  } catch (e) { log('托盘图标失败', e); }
+}
+function openDefault(url) { execFile('cmd', ['/c', 'start', '', url], { windowsHide: true }); }
+/** 改用默认浏览器：切到 browser 模式（页面会显示退出按钮），挂托盘图标，再打开页面 */
+function useDefaultBrowser(url, why) {
+  log(why + '，改用默认浏览器'); global.__qzMode = 'browser'; startTray(url); openDefault(url);
+}
 function free(port) {
   return new Promise(ok => { const s = net.createServer().once('error', () => ok(false)).once('listening', () => s.close(() => ok(true))).listen(port, '127.0.0.1'); });
 }
@@ -48,13 +92,17 @@ function ping(port) {
 function findBrowser() {
   const E = process.env, c = [];
   for (const b of [E['ProgramFiles(x86)'], E.ProgramFiles, E.LOCALAPPDATA].filter(Boolean)) c.push(path.join(b, 'Microsoft', 'Edge', 'Application', 'msedge.exe'), path.join(b, 'Google', 'Chrome', 'Application', 'chrome.exe'));
+  if (E.QZ_BROWSER === 'none') return undefined; /* 测试用：模拟没有 Edge/Chrome */
   if (E.QZ_BROWSER) c.unshift(E.QZ_BROWSER);
   return c.find(p => { try { return fs.statSync(p).isFile(); } catch (e) { return false; } });
 }
 /* 打开一个独立应用窗口（没有地址栏和标签页）；档案目录单独放，所以同一档案的窗口都属于千章 */
 function openWindow(url) {
   const exe = findBrowser();
-  if (!exe) { log('没找到 Edge/Chrome，改用默认浏览器'); execFile('cmd', ['/c', 'start', '', url], { windowsHide: true }); return null; }
+  if (!exe) {
+    alert('没有找到 Microsoft Edge 或 Google Chrome，千章将用默认浏览器打开。\n\n这种方式下关掉网页不会退出千章：要退出，请点页面左下角的「退出千章」，或右下角托盘里千章图标 → 退出千章。\n\n装上 Edge 或 Chrome 后，千章会用独立窗口打开，关窗即退出。', true);
+    useDefaultBrowser(url, '没找到 Edge/Chrome'); return null;
+  }
   log('打开窗口', exe);
   /* 关掉“窗口关了还在后台运行”，否则窗口关闭后浏览器进程不退，千章也就不退 */
   try { fs.mkdirSync(profile, { recursive: true }); const ls = path.join(profile, 'Local State'); let st = {}; try { st = JSON.parse(fs.readFileSync(ls, 'utf8')); } catch (e) {}
@@ -66,10 +114,10 @@ function windowAlive() {
   return new Promise(ok => execFile('powershell', ['-NoProfile', '-Command', "@(Get-CimInstance Win32_Process -Filter \"Name='msedge.exe' or Name='chrome.exe'\" | ? { $_.CommandLine -and $_.CommandLine.Contains($env:QZ_PROFILE) }).Count"],
     { windowsHide: true, env: Object.assign({}, process.env, { QZ_PROFILE: profile }) }, (e, out) => ok(e ? true : +String(out).trim() > 0)));
 }
-let fallback = false, lowIL = false;
+let lowIL = false;
 async function watchAndExit(child) {
-  if (!child) { log('默认浏览器模式：无法得知窗口何时关闭，程序保持运行（可在任务管理器里结束）'); return; }
-  const stop = () => { if (fallback) { log('窗口关了，但页面在默认浏览器里，继续运行'); return; } log('窗口已关闭，退出'); try { fs.unlinkSync(lockFile); } catch (e) {} setTimeout(() => process.exit(0), 300); };
+  if (!child) { log('默认浏览器模式：关页面不会退出，用托盘或页面里的「退出千章」'); return; }
+  const stop = () => { if (global.__qzMode === 'browser') { log('窗口关了，但页面在默认浏览器里，继续运行'); return; } log('窗口已关闭，退出'); try { fs.unlinkSync(lockFile); } catch (e) {} setTimeout(() => process.exit(0), 300); };
   child.on('exit', async () => { /* 宽限：连续两次（约 6 秒）都没有千章窗口才退出 */
     let miss = 0;
     const tick = async () => { if (await windowAlive()) { miss = 0; } else if (++miss >= 2) return stop(); setTimeout(tick, 3000); };
@@ -87,7 +135,8 @@ async function watchAndExit(child) {
   try { const g = require('child_process').execFileSync('whoami', ['/groups'], { windowsHide: true, encoding: 'utf8' });
     if (/S-1-16-4096/.test(g)) { log('以低完整性运行'); lowIL = true; } } catch (e) {}
   /* 单实例：已经在运行就只再开（或聚焦）一个窗口 */
-  try { const old = JSON.parse(fs.readFileSync(lockFile, 'utf8')); if (old.port && await ping(old.port)) { log('已在运行，打开窗口', old.port); const c = openWindow('http://127.0.0.1:' + old.port + '/workspace/'); setTimeout(() => process.exit(0), c ? 4000 : 1500); return; } } catch (e) {}
+  try { const old = JSON.parse(fs.readFileSync(lockFile, 'utf8')); if (old.port && await ping(old.port)) { log('已在运行，打开窗口', old.port); const u = 'http://127.0.0.1:' + old.port + '/workspace/', b = findBrowser();
+    if (b) openWindow(u); else openDefault(u); setTimeout(() => process.exit(0), b ? 4000 : 1500); return; } } catch (e) {}
   /* 端口：7801 常被开发用的服务占着，程序从 7811 起找空闲端口，不和它抢 */
   let port = +process.env.QZ_PORT || 7811;
   while (port < 7860 && !(await free(port))) port++;
@@ -107,8 +156,8 @@ async function watchAndExit(child) {
   log('千章已启动', url, '作品目录', path.join(dataDir, 'projects'));
   if (process.env.QZ_NO_BROWSER) return;
   if (lowIL) { alert('千章所在的文件夹被标记为“低完整性”，在这里运行时浏览器窗口会是空白的。\n请把 Qianzhang.exe 连同 data 文件夹复制到别的位置再打开，或在该目录运行：icacls Qianzhang.exe /setintegritylevel M\n日志：' + logFile, true); }
-  const t0 = Date.now(), child = openWindow(url);
+  const t0 = Date.now(), child = winChild = openWindow(url);
   if (!child) return watchAndExit(null);
-  setTimeout(() => { if (global.__qzApiSeen() < t0) { log('应用窗口里的页面没有运行（可能被安全软件拦截），改用默认浏览器'); fallback = true; execFile('cmd', ['/c', 'start', '', url], { windowsHide: true }); } }, 20000);
+  setTimeout(() => { if (global.__qzApiSeen() < t0) useDefaultBrowser(url, '应用窗口里的页面没有运行（可能被安全软件拦截）'); }, 20000);
   watchAndExit(child);
 })().catch(e => { log('启动失败', e); alert('千章启动失败：' + (e && e.message) + '\n日志：' + logFile); });

@@ -1,6 +1,6 @@
 // 全新安装：服务启动、列书架都不该建出空的 data/projects；第一次保存才建
 const assert = require('node:assert'), { spawn } = require('node:child_process'), fs = require('node:fs'), os = require('node:os'), path = require('node:path');
-const root = path.join(__dirname, '..'), tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'qz-lazy-')), data = path.join(tmp, 'data');
+const root = path.join(__dirname, '..'), tmp = (fs.mkdirSync(path.join(root, '.test-tmp'), { recursive:true }), fs.mkdtempSync(path.join(root, '.test-tmp', 'qz-lazy-'))), data = path.join(tmp, 'data');
 const srv = spawn(process.execPath, [path.join(root, 'server', 'server.js'), root, '0'], { env:Object.assign({}, process.env, { QZ_DATA:data, PORT:'' }), stdio:['ignore', 'pipe', 'pipe'] });
 const done = (e) => { srv.kill(); fs.rmSync(tmp, { recursive:true, force:true }); if (e) { console.error(e); process.exit(1); } console.log('首次保存才建作品目录：通过'); };
 let out = '';

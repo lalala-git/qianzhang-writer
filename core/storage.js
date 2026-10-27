@@ -20,7 +20,7 @@
   Storage.prototype = {
     connect: function () {
       return fetch(this.apiBase + '/ping', { cache:'no-store' }).then(r => r.ok ? r.json() : null)
-        .then(j => { this.token = j && j.token; this.server = !!this.token; return this.server; })
+        .then(j => { this.token = j && j.token; this.server = !!this.token; this.app = !!(j && j.app); this.mode = j && j.mode || null; return this.server; })
         .catch(() => { this.server = false; return false; });
     },
     /** 本地服务上的加密密钥：action = get | set | clear */
@@ -28,6 +28,10 @@
       if (!this.server) return Promise.reject(new Error('未连接本地服务'));
       return fetch(this.apiBase + '/ai-key', { method:'POST', headers:{ 'Content-Type':'application/json', 'X-Qianzhang-Token':this.token }, body:JSON.stringify({ action, key }) })
         .then(r => r.json().catch(() => ({})).then(j => { if (!r.ok && !j.error) throw new Error('密钥保存失败（' + r.status + '）'); return j; }));
+    },
+    /** 桌面程序：从页面退出（关掉本地服务） */
+    quit: function () {
+      return fetch(this.apiBase + '/quit', { method:'POST', headers:{ 'Content-Type':'application/json', 'X-Qianzhang-Token':this.token }, body:'{}' }).then(r => r.ok);
     },
     _localGet: function (id) {
       try { const s = this.local && this.local.getItem(KEY + id); return s ? JSON.parse(s) : null; } catch (e) { return null; }

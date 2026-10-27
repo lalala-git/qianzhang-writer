@@ -4,6 +4,13 @@
 
 ## [未发布 / Unreleased]
 
+- 桌面程序：没有 Edge/Chrome 时先弹窗说明再用默认浏览器打开；默认浏览器模式下有托盘图标（打开 / 退出千章），页面侧栏有「退出千章」按钮，不用再去任务管理器结束。
+  Desktop app: without Edge/Chrome it explains first, then opens the default browser; in that mode a tray icon (Open / Quit) and a "Quit Qianzhang" button in the sidebar replace ending it from Task Manager.
+- 界面细节：书架、写作页和设置页的间距、焦点和悬停效果。
+  UI polish on the bookshelf, write page and settings (spacing, focus and hover states).
+- CI 增加 macOS；新增 `source-packages` 工作流，打 macOS / Linux 源码包。
+  CI now includes macOS; a new `source-packages` workflow builds macOS / Linux source packages.
+
 ## [1.0.0] - 2026-10-27
 
 首个公开版本。First public release.

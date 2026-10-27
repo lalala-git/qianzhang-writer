@@ -17,6 +17,8 @@ for (const f of ['README.md', 'CHANGELOG.md', 'CONTRIBUTING.md', 'docs/pain-poin
   assert.ok(!/西游记|Journey to the West|wikisource|CanonGraph|公开设计参考|第\s*\d+\s*轮/i.test(t), f + ' 含已移除的内容');
 }
 /* 未签名、SmartScreen、平台与 AI 服务验证范围要说清楚 */
+assert.ok(!/任务管理器|Task Manager/.test(readme), 'README 不应再让用户去任务管理器结束程序');
+assert.ok(fs.existsSync(path.join(root, '.github/workflows/source-packages.yml')) && /node tests\/run-all\.js/.test(fs.readFileSync(path.join(root, '.github/workflows/source-packages.yml'), 'utf8')), '应有先跑测试的 macOS/Linux 源码包工作流');
 assert.ok(/SmartScreen/.test(readme) && /仍要运行/.test(readme) && /Run anyway/.test(readme) && /代码签名/.test(readme) && /code-signed|code signing/i.test(readme), 'README 应说明未签名与 SmartScreen');
 assert.ok(/真实的 macOS 或 Linux 桌面硬件/.test(readme) && /real macOS or Linux desktop hardware/.test(readme) && /真实的? ?AI 服务|real AI service/i.test(readme), 'README 应说明未验证的范围');
 for (const f of ['CONTRIBUTING.md', 'CHANGELOG.md', '.github/workflows/test.yml']) assert.ok(fs.existsSync(path.join(root, f)), f);

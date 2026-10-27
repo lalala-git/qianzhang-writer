@@ -1156,6 +1156,14 @@
 "这个称呼通常只在特定场合用": "This form of address is normally used only in a specific context",
 "（把握不大）": " (low confidence)",
 "没有可替换的地方": "Nothing to replace",
+/* 桌面程序退出 */
+"退出千章": "Quit Qianzhang",
+"保存并关闭千章": "Save and close Qianzhang",
+"会先保存，然后关闭千章的本地服务。之后这个页面就不能再保存了，可以直接关掉。": "Your work is saved first, then Qianzhang's local service closes. This page can't save after that; you can just close it.",
+"退出": "Quit",
+"没能退出：本地服务没有响应": "Couldn't quit: the local service isn't responding",
+"千章已退出": "Qianzhang has quit",
+"可以关闭这个页面了。再次使用时，双击 Qianzhang.exe。": "You can close this page now. To use it again, double-click Qianzhang.exe.",
 /* 密钥加密保存、备份脱敏、陪写确认 */
 "密钥会由本地服务加密保存在 data/app，不写进浏览器存储、作品或备份。": "The key will be encrypted by the local server in data/app, never stored in the browser, works or backups.",
 "未连接本地服务：密钥只在本页内存里，关页后需要重新填写。": "Not connected to the local server: the key is kept in this page's memory only and must be re-entered after closing.",

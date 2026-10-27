@@ -1,0 +1,61 @@
+# macOS / Linux 源码包：在 GitHub 的 macOS、Linux 机器上跑完测试后，打出带启动脚本的源码包（作为构建产物下载）。
+# Source packages for macOS / Linux: run the tests on GitHub's macOS and Linux runners, then build a source
+# package with a start script, uploaded as a workflow artifact. This is CI, not testing on real desktop hardware.
+name: source-packages
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux
+          - os: macos-latest
+            name: macos
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/run-all.js
+      - name: Build source package
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF_TYPE" = tag ]; then ver="${GITHUB_REF_NAME#v}"; else ver="dev-${GITHUB_SHA::7}"; fi
+          out="qianzhang-${ver}-${{ matrix.name }}-source"
+          mkdir -p "pkg/$out"
+          cp -R core ui workspace server README.md CHANGELOG.md "pkg/$out/"
+          cat > "pkg/$out/start.sh" <<'SH'
+          #!/bin/sh
+          # 千章 · 需要 Node.js 20 或更新版本 / Requires Node.js 20+. Opens http://127.0.0.1:7801/workspace/
+          cd "$(dirname "$0")" || exit 1
+          command -v node >/dev/null 2>&1 || { echo "Node.js 20+ is required: https://nodejs.org/"; exit 1; }
+          ( sleep 1; if command -v open >/dev/null 2>&1; then open http://127.0.0.1:7801/workspace/; elif command -v xdg-open >/dev/null 2>&1; then xdg-open http://127.0.0.1:7801/workspace/; fi ) &
+          exec node server/server.js
+          SH
+          chmod +x "pkg/$out/start.sh"
+          if [ "${{ matrix.name }}" = macos ]; then cp "pkg/$out/start.sh" "pkg/$out/Qianzhang.command"; chmod +x "pkg/$out/Qianzhang.command"; fi
+          tar -C pkg -czf "$out.tar.gz" "$out"
+          echo "PKG=$out.tar.gz" >> "$GITHUB_ENV"
+      - name: Smoke-test the package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir t && tar -C t -xzf "$PKG" && cd t/*/
+          node server/server.js . 0 > ../server.log 2>&1 &
+          for i in $(seq 1 20); do port=$(grep -oE '127\.0\.0\.1:[0-9]+' ../server.log | head -1 | cut -d: -f2 || true); [ -n "$port" ] && break; sleep 0.5; done
+          curl -fsS "http://127.0.0.1:$port/api/ping" | grep -q '"ok":true'
+          curl -fsS "http://127.0.0.1:$port/workspace/" | grep -q '<html'
+          kill %1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PKG }}
+          path: ${{ env.PKG }}
