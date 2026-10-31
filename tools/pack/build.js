@@ -53,7 +53,8 @@ async function build() {
   try {
     execFileSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['install', '--prefix', path.join(work, 'rc'), '--no-save', '--no-audit', '--no-fund', 'rcedit@4.0.1'], { stdio: 'inherit', shell: true, env: npmEnv });
     const m = require(path.join(work, 'rc', 'node_modules', 'rcedit')), rcedit = m.rcedit || m.default || m;
-    await rcedit(exe, { icon: path.join(__dirname, 'icon.ico'), 'version-string': { ProductName: '千章', FileDescription: '千章 · 网文写作台', CompanyName: '千章 contributors', OriginalFilename: 'Qianzhang.exe', InternalName: 'Qianzhang' } });
+    const V = require('../../server/update.js').VERSION; /* 与 package.json、界面显示、发布版本同一个来源 */
+    await rcedit(exe, { icon: path.join(__dirname, 'icon.ico'), 'file-version': V, 'product-version': V, 'version-string': { ProductName: '千章', FileDescription: '千章 · 网文写作台', CompanyName: '千章 contributors', OriginalFilename: 'Qianzhang.exe', InternalName: 'Qianzhang' } });
   } catch (e) { console.warn('设置图标失败（不影响使用）：' + e.message); }
   execFileSync(npx, ['--yes', 'postject@1.0.0-alpha.6', exe, 'NODE_SEA_BLOB', blob,
     '--sentinel-fuse', 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2'], { stdio: 'inherit', shell: true, env: npmEnv });

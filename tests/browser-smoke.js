@@ -21,7 +21,7 @@ const dataBefore = dataSig();
 /* 没有 QZ_BASE：自己起服务，作品目录指向临时文件夹 */
 function startServer() {
   fs.rmSync(tmpData, { recursive:true, force:true }); fs.mkdirSync(path.join(tmpData, 'projects'), { recursive:true });
-  server = spawn(process.execPath, [path.join(__dirname, '..', 'server', 'server.js'), path.join(__dirname, '..'), '0'], { stdio:['ignore', 'pipe', 'pipe'], env:Object.assign({}, process.env, { QZ_DATA:tmpData, PORT:'' }) });
+  server = spawn(process.execPath, [path.join(__dirname, '..', 'server', 'server.js'), path.join(__dirname, '..'), '0'], { stdio:['ignore', 'pipe', 'pipe'], env:Object.assign({}, process.env, { QZ_DATA:tmpData, PORT:'', QZ_UPDATE_CHECK:'off' }) });
   return new Promise((ok, no) => { let o = ''; const t = setTimeout(() => no(new Error('本地服务启动超时')), 8000);
     server.stdout.on('data', c => { o += c; const m = o.match(/http:\/\/127\.0\.0\.1:(\d+)\//); if (m) { clearTimeout(t); BASE = 'http://127.0.0.1:' + m[1]; ok(); } });
     server.on('exit', c => { clearTimeout(t); no(new Error('本地服务退出 ' + c)); }); });
@@ -532,6 +532,34 @@ async function main() {
     return r; })()`);
   if (!qz || qz.err || !(qz.hiddenFromSource && qz.shownInBrowserMode && qz.asks && qz.cancelKeeps && qz.restored)) errors.push('退出按钮异常：' + JSON.stringify(qz));
   check('退出按钮：源码运行隐藏、exe 默认浏览器模式显示、先确认', JSON.stringify(qz));
+  // 新版本提醒：有新版本时侧栏出现提示，点击把发布地址交给系统浏览器，叉掉后同一版本不再出现；设置里关掉后页面不再去问
+  const up = await js(`(async () => {
+    const sleep = ms => new Promise(r => setTimeout(r, ms)), st = QZ.storage, K = 'qianzhang:update-check', D = 'qianzhang:update-dismissed', r = {};
+    const keep = { update:st.update, openRelease:st.openRelease, server:st.server, off:localStorage.getItem(K), dis:localStorage.getItem(D), cur:QZ._update };
+    let asked = 0, opened = null; const note = () => document.getElementById('qz-update');
+    try {
+      st.server = true; localStorage.removeItem(K); localStorage.removeItem(D);
+      st.update = () => { asked++; return Promise.resolve({ ok:true, newer:true, latest:'9.9.9', current:'1.1.0', url:'https://github.com/lalala-git/qianzhang-writer/releases/tag/v9.9.9' }); };
+      st.openRelease = u => { opened = u; return Promise.resolve(true); };
+      r.hiddenAtFirst = !!note() && (QZ._update = null, QZ.renderUpdate(), note().hidden);
+      await QZ.checkUpdate(); await sleep(50);
+      r.shown = !note().hidden && /9\\.9\\.9/.test(note().textContent) && note().getBoundingClientRect().height > 0;
+      note().querySelector('.update-open').click(); await sleep(50);
+      r.opens = opened === 'https://github.com/lalala-git/qianzhang-writer/releases/tag/v9.9.9';
+      note().querySelector('.update-x').click(); await sleep(50);
+      r.dismissed = note().hidden;
+      QZ._update = null; await QZ.checkUpdate(); await sleep(50);
+      r.staysDismissed = note().hidden;
+      localStorage.setItem(K, 'off'); localStorage.removeItem(D); asked = 0; QZ._update = null; QZ.renderUpdate();
+      await QZ.checkUpdate(); r.offNoRequest = asked === 0 && note().hidden;
+      await QZ.checkUpdate(true); r.offStillHidden = note().hidden;
+    } catch (e) { r.err = e.message; }
+    st.update = keep.update; st.openRelease = keep.openRelease; st.server = keep.server; QZ._update = keep.cur;
+    keep.off === null ? localStorage.removeItem(K) : localStorage.setItem(K, keep.off); keep.dis === null ? localStorage.removeItem(D) : localStorage.setItem(D, keep.dis);
+    QZ.renderUpdate();
+    return r; })()`);
+  if (!up || up.err || !(up.hiddenAtFirst && up.shown && up.opens && up.dismissed && up.staysDismissed && up.offNoRequest && up.offStillHidden)) errors.push('新版本提醒异常：' + JSON.stringify(up));
+  check('新版本提醒：显示、点击打开发布页、可忽略、设置里关掉就不再询问', JSON.stringify(up));
   // 空书逐页渲染、按钮都有可读名字、百万字书切页耗时
   const au = await js(`(async () => {
     const real = QZ.project, sleep = ms => new Promise(r => setTimeout(r, ms)), out = { empty:[], unnamed:[], slow:[] };

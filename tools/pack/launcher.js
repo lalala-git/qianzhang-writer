@@ -109,10 +109,13 @@ function openWindow(url) {
     if (!st.background_mode || st.background_mode.enabled !== false) { st.background_mode = { enabled: false }; fs.writeFileSync(ls, JSON.stringify(st)); } } catch (e) { log('写窗口设置失败', e); }
   return spawn(exe, ['--app=' + url, '--user-data-dir=' + profile, '--no-first-run', '--no-default-browser-check', '--disable-features=Translate', '--window-size=1320,880'], { detached: false, stdio: 'ignore' });
 }
-/* 还有没有用千章档案的浏览器进程（窗口可能交给了已在运行的同档案进程） */
+/* 还有没有千章的浏览器窗口（窗口可能交给了已在运行的同档案进程）：看该档案的浏览器进程里有没有带可见主窗口的。
+   只数“有窗口的”进程：窗口关了、后台进程还挂着时，不会再被当成窗口还开着而一直不退出。
+   返回 true / false；查询出错或超过 10 秒返回 null（不知道）。 */
 function windowAlive() {
-  return new Promise(ok => execFile('powershell', ['-NoProfile', '-Command', "@(Get-CimInstance Win32_Process -Filter \"Name='msedge.exe' or Name='chrome.exe'\" | ? { $_.CommandLine -and $_.CommandLine.Contains($env:QZ_PROFILE) }).Count"],
-    { windowsHide: true, env: Object.assign({}, process.env, { QZ_PROFILE: profile }) }, (e, out) => ok(e ? true : +String(out).trim() > 0)));
+  const ps = "$ids = @(Get-CimInstance Win32_Process -Filter \"Name='msedge.exe' or Name='chrome.exe'\" | ? { $_.CommandLine -and $_.CommandLine.Contains($env:QZ_PROFILE) } | % { $_.ProcessId }); if ($ids.Count) { @(Get-Process -Id $ids -ErrorAction SilentlyContinue | ? { $_.MainWindowHandle -ne 0 }).Count } else { 0 }";
+  return new Promise(ok => execFile('powershell', ['-NoProfile', '-Command', ps], { windowsHide: true, timeout: 10000, env: Object.assign({}, process.env, { QZ_PROFILE: profile }) },
+    (e, out) => { const n = parseInt(String(out).trim(), 10); ok(e || isNaN(n) ? null : n > 0); }));
 }
 let lowIL = false;
 async function watchAndExit(child) {
@@ -120,7 +123,13 @@ async function watchAndExit(child) {
   const stop = () => { if (global.__qzMode === 'browser') { log('窗口关了，但页面在默认浏览器里，继续运行'); return; } log('窗口已关闭，退出'); try { fs.unlinkSync(lockFile); } catch (e) {} setTimeout(() => process.exit(0), 300); };
   child.on('exit', async () => { /* 宽限：连续两次（约 6 秒）都没有千章窗口才退出 */
     let miss = 0;
-    const tick = async () => { if (await windowAlive()) { miss = 0; } else if (++miss >= 2) return stop(); setTimeout(tick, 3000); };
+    let unknown = 0; /* 连续 6 次（约半分钟以上）查不出窗口状态也退出，不会一直挂着 */
+    const tick = async () => {
+      const alive = await windowAlive();
+      if (alive === null) { if (++unknown >= 6) { log('查不出窗口状态，退出'); return stop(); } }
+      else { unknown = 0; if (alive) miss = 0; else if (++miss >= 2) return stop(); }
+      setTimeout(tick, 3000);
+    };
     setTimeout(tick, 1500);
   });
 }

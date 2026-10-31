@@ -1,0 +1,13 @@
+{
+  "name": "qianzhang-writer",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Qianzhang (千章) — a local novel writing workspace",
+  "scripts": {
+    "start": "node server/server.js .",
+    "test": "node tests/run-all.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

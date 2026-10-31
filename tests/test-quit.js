@@ -14,6 +14,7 @@ assert.ok(/if \(!exe\) \{\s*alert\('没有找到 Microsoft Edge 或 Google Chrom
 assert.ok(/NotifyIcon/.test(L) && /'退出千章'/.test(L) && /cmd === 'quit'/.test(L), '默认浏览器模式应有托盘退出');
 assert.ok(/E\.QZ_BROWSER === 'none'\) return undefined/.test(L), '应能模拟没有浏览器来测试');
 assert.ok(!/任务管理器/.test(L), '不应再让用户去任务管理器');
+assert.ok(/MainWindowHandle -ne 0/.test(L) && /timeout: 10000/.test(L) && /unknown >= 6/.test(L), '关窗检测应只数有窗口的浏览器进程，带超时，查不出时不一直挂着');
 const A = fs.readFileSync(path.join(__dirname, '..', 'ui', 'app.js'), 'utf8');
 assert.ok(/id="qz-quit" hidden/.test(A) && /a === 'quit'/.test(A), '页面应有默认隐藏的退出按钮');
 

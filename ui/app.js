@@ -37,7 +37,7 @@
     },
     /** 连上本地服务：AI 密钥改由本地服务加密保存；旧版存在浏览器里的明文密钥搬过去后删除 */
     attachKeys: function () {
-      this.renderQuit();
+      this.renderQuit(); this.checkUpdate();
       const AI = root.QZAI; if (!AI || !this.storage.server) return Promise.resolve();
       const st = this.storage;
       return AI.attachVault({ get:() => st.aiKey('get'), set:k => st.aiKey('set', k) }).then(r => { if (r && r.error) UI.toast(r.error, 'err'); }).catch(() => {});
@@ -46,6 +46,25 @@
     renderQuit: function () {
       const host = document.getElementById('qz-quit'); if (!host) return;
       host.hidden = !this.storage.app; host.classList.toggle('attn', this.storage.mode === 'browser');
+    },
+    /** 新版本提醒：启动后在后台问一次；设置里关掉就完全不问。失败一律静默 */
+    updateOff: function () { try { return localStorage.getItem('qianzhang:update-check') === 'off'; } catch (e) { return false; } },
+    checkUpdate: function (force) {
+      if (!this.storage.server || (this.updateOff() && !force)) return Promise.resolve(null);
+      return this.storage.update(force).then(r => { this._update = r || null; this.renderUpdate(); return r; }).catch(() => null);
+    },
+    renderUpdate: function () {
+      const host = document.getElementById('qz-update'); if (!host) return;
+      const r = this._update; let show = !!(r && r.newer && r.latest) && !this.updateOff();
+      if (show) { let seen = null; try { seen = localStorage.getItem('qianzhang:update-dismissed'); } catch (e) {} show = seen !== r.latest; document.getElementById('qz-update-v').textContent = 'v' + r.latest; }
+      host.hidden = !show;
+    },
+    openUpdate: function () {
+      return this.storage.openRelease(this._update && this._update.url).then(ok => { if (!ok) UI.toast('没能打开下载页面', 'err'); });
+    },
+    hideUpdate: function () {
+      try { if (this._update && this._update.latest) localStorage.setItem('qianzhang:update-dismissed', this._update.latest); } catch (e) {}
+      this.renderUpdate();
     },
     quitApp: function () {
       return UI.confirm('退出千章', '会先保存，然后关闭千章的本地服务。之后这个页面就不能再保存了，可以直接关掉。', '退出').then(ok => {
@@ -194,6 +213,7 @@
         + '<button class="project-switch" data-act="home.switch" id="project-switch" title="切换作品（Alt+B）" aria-haspopup="listbox"></button>'
         + '<button class="pal-btn" data-act="palette" title="命令面板（Ctrl+K）">' + UI.icon('search') + '<span>搜索</span><kbd>Ctrl K</kbd></button>' + '<nav class="nav" id="nav"></nav><div class="side-foot"><div class="save-state" id="save-state"><i></i><span>已同步</span></div>'
         + '<a class="icon-btn" href="#/settings" id="settings-btn" title="设置（备份、回收站、外观）" aria-label="设置">' + UI.icon('settings') + '</a><button class="icon-btn" data-act="theme" id="theme-btn" title="切换深浅色"></button></div>'
+        + '<div class="update-note" id="qz-update" hidden><button class="update-open" data-act="update-open" title="点击打开下载页面（不会自动下载或替换程序）">有新版本 <b id="qz-update-v"></b></button><button class="update-x" data-act="update-hide" title="这个提醒先不显示" aria-label="这个提醒先不显示">' + UI.icon('x') + '</button></div>'
         + '<button class="btn sm quit-btn" data-act="quit" id="qz-quit" hidden title="保存并关闭千章">' + UI.icon('x') + '退出千章</button></aside>'
         + '<main class="main" id="main"></main><div id="toasts" class="toasts"></div>';
     },
@@ -216,7 +236,7 @@
         if (!e.target.closest('details.menu')) document.querySelectorAll('details.menu[open]').forEach(d => d.removeAttribute('open'));
         const t = e.target.closest('[data-act]'); if (!t || t.disabled) return;
         const [a, b] = t.dataset.act.split('.');
-        if (!b) { if (a === 'theme') this.toggleTheme(); if (a === 'palette' && root.QZPalette) root.QZPalette.open(this); if (a === 'quit') this.quitApp(); return; }
+        if (!b) { if (a === 'theme') this.toggleTheme(); if (a === 'palette' && root.QZPalette) root.QZPalette.open(this); if (a === 'quit') this.quitApp(); if (a === 'update-open') this.openUpdate(); if (a === 'update-hide') this.hideUpdate(); return; }
         const P = this.pages()[a], fn = P && P.actions && P.actions[b];
         if (fn) { e.preventDefault(); fn(this, t, e); }
       });

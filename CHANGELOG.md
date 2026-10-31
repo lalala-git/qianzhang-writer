@@ -4,12 +4,25 @@
 
 ## [未发布 / Unreleased]
 
-- 桌面程序：没有 Edge/Chrome 时先弹窗说明再用默认浏览器打开；默认浏览器模式下有托盘图标（打开 / 退出千章），页面侧栏有「退出千章」按钮，不用再去任务管理器结束。
-  Desktop app: without Edge/Chrome it explains first, then opens the default browser; in that mode a tray icon (Open / Quit) and a "Quit Qianzhang" button in the sidebar replace ending it from Task Manager.
+## [1.1.0] - 2026-10-31
+
+### English
+
+- New-version reminder: shortly after start-up Qianzhang asks GitHub once whether a newer release exists. If so, a small note appears in the sidebar and clicking it opens the release page in your browser. It never downloads or replaces anything by itself, stays silent when you are offline, sends none of your writing, and can be turned off in Settings → Version and updates (which also shows the current version and has a "Check now" button).
+- Quitting on Windows: when Edge/Chrome is missing, Qianzhang explains this first and opens your default browser; in that mode a tray icon (Open / Quit) and a "Quit Qianzhang" button in the sidebar save your work and quit.
+- Closing the window now ends the program more reliably: the check only counts browser processes that still have a window, and it has a time limit.
+- Interface polish on the bookshelf, write page and settings (spacing, focus and hover states).
+- Windows: the exe now shows the Qianzhang icon and version 1.1.0 in its file properties.
+- macOS and Linux: the CI tests now also run on macOS, and a new `source-packages` workflow builds source packages with a start script after the tests pass.
+
+### 中文
+
+- 新版本提醒：启动后不久，千章会向 GitHub 查一次有没有更新的发布。有的话，侧栏出现一条小提示，点一下用浏览器打开发布页面。它不会自己下载或替换任何东西，断网时不出声，也不会发送你的任何文字；可以在 设置 → 版本与更新 里关掉（那里还能看到当前版本，并有「立即检查」按钮）。
+- Windows 退出：没有 Edge/Chrome 时先弹窗说明，再用默认浏览器打开；这种模式下，右下角托盘图标（打开 / 退出）和侧栏里的「退出千章」按钮都会先保存再退出。
+- 关窗后更可靠地结束程序：只数仍然带窗口的浏览器进程，并加了超时。
 - 界面细节：书架、写作页和设置页的间距、焦点和悬停效果。
-  UI polish on the bookshelf, write page and settings (spacing, focus and hover states).
-- CI 增加 macOS；新增 `source-packages` 工作流，打 macOS / Linux 源码包。
-  CI now includes macOS; a new `source-packages` workflow builds macOS / Linux source packages.
+- Windows：exe 的文件属性里现在带有千章图标和 1.1.0 版本号。
+- macOS 和 Linux：CI 现在也在 macOS 上跑测试，新增 `source-packages` 工作流，在测试通过后打出带启动脚本的源码包。
 
 ## [1.0.0] - 2026-10-27
 

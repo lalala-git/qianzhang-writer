@@ -18,6 +18,7 @@ const MIME = {
 };
 const PROJECT_ID = /^[a-z0-9][a-z0-9._-]{0,63}$/;
 const { KeyStore } = require('./keystore.js');
+const updater = require('./update.js');
 const MAX_BODY = 24 * 1024 * 1024;
 
 function inside(parent, child) {
@@ -94,7 +95,7 @@ const server = http.createServer(function (req, res) {
   catch (e) { return json(res, 400, { ok:false, error:'请求地址无效' }); }
   if (url.pathname === '/favicon.ico') { res.writeHead(204); return res.end(); }
   if (url.pathname === '/api/ping' && req.method === 'GET') /* app：由桌面程序启动（可从页面退出）；mode：window 独立窗口 / browser 默认浏览器 */
-    return json(res, 200, { ok:true, token:TOKEN, app:typeof global.__qzQuit === 'function', mode:global.__qzMode || null });
+    return json(res, 200, { ok:true, token:TOKEN, app:typeof global.__qzQuit === 'function', mode:global.__qzMode || null, version:updater.VERSION });
   /* AI 密钥：加密存在 data/app，页面只在需要时向本地服务要（不进 localStorage、作品或备份） */
   if (url.pathname === '/api/ai-key' && req.method === 'POST') {
     if (!authorized(req)) return json(res, 403, { ok:false, error:'写入授权失败' });
@@ -109,6 +110,18 @@ const server = http.createServer(function (req, res) {
     if (!authorized(req)) return json(res, 403, { ok:false, error:'写入授权失败' });
     if (typeof global.__qzQuit !== 'function') return json(res, 404, { ok:false, error:'源码运行请在终端按 Ctrl+C 结束' });
     json(res, 200, { ok:true }); setTimeout(() => global.__qzQuit('page'), 200); return;
+  }
+  /* 新版本提醒：页面启动后、或设置里点“立即检查”时才来问；只读 GitHub 的最新发布信息，永远不下载、不替换程序 */
+  if (url.pathname === '/api/update' && req.method === 'POST') {
+    if (!authorized(req)) return json(res, 403, { ok:false, error:'写入授权失败' });
+    readJson(req, 1024).then(i => updater.check(!!(i && i.force))).catch(() => ({ ok:true, current:updater.VERSION, newer:false, failed:true })).then(r => json(res, 200, r));
+    return;
+  }
+  /* 用系统浏览器打开发布页面（Edge 应用窗口里不适合跳外链）；只会打开本项目的发布地址 */
+  if (url.pathname === '/api/open-release' && req.method === 'POST') {
+    if (!authorized(req)) return json(res, 403, { ok:false, error:'写入授权失败' });
+    readJson(req, 1024).then(i => { const u = updater.releaseUrl(i && i.url); updater.openExternal(u); json(res, 200, { ok:true, url:u }); }).catch(e => json(res, 400, { ok:false, error:e.message }));
+    return;
   }
   if (url.pathname === '/api/projects' && req.method === 'GET') {
     try {

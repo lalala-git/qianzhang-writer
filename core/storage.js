@@ -20,7 +20,7 @@
   Storage.prototype = {
     connect: function () {
       return fetch(this.apiBase + '/ping', { cache:'no-store' }).then(r => r.ok ? r.json() : null)
-        .then(j => { this.token = j && j.token; this.server = !!this.token; this.app = !!(j && j.app); this.mode = j && j.mode || null; return this.server; })
+        .then(j => { this.token = j && j.token; this.server = !!this.token; this.app = !!(j && j.app); this.mode = j && j.mode || null; this.version = j && j.version || null; return this.server; })
         .catch(() => { this.server = false; return false; });
     },
     /** 本地服务上的加密密钥：action = get | set | clear */
@@ -32,6 +32,15 @@
     /** 桌面程序：从页面退出（关掉本地服务） */
     quit: function () {
       return fetch(this.apiBase + '/quit', { method:'POST', headers:{ 'Content-Type':'application/json', 'X-Qianzhang-Token':this.token }, body:'{}' }).then(r => r.ok);
+    },
+    /** 新版本提醒：问本地服务有没有更新的发布；失败一律当作“没有”（force 时返回 failed 让设置页如实告知） */
+    update: function (force) {
+      if (!this.server) return Promise.resolve({ newer:false, failed:true });
+      return fetch(this.apiBase + '/update', { method:'POST', headers:{ 'Content-Type':'application/json', 'X-Qianzhang-Token':this.token }, body:JSON.stringify({ force:!!force }) })
+        .then(r => r.ok ? r.json() : { newer:false, failed:true }).catch(() => ({ newer:false, failed:true }));
+    },
+    openRelease: function (url) {
+      return fetch(this.apiBase + '/open-release', { method:'POST', headers:{ 'Content-Type':'application/json', 'X-Qianzhang-Token':this.token }, body:JSON.stringify({ url }) }).then(r => r.ok).catch(() => false);
     },
     _localGet: function (id) {
       try { const s = this.local && this.local.getItem(KEY + id); return s ? JSON.parse(s) : null; } catch (e) { return null; }

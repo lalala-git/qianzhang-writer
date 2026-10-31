@@ -46,12 +46,25 @@ Additional contributor: **[Codex (OpenAI)](https://github.com/codex)** — docum
 
 ## What it does
 
-- **Word count and streaks**: daily goal ring, streak days, 18-week / last-30-days streak calendar, word and chapter milestones, missed-day warnings, a chapter buffer, planned publication dates and reminders.
-- **Outline and foreshadowing**: volumes and per-chapter outlines; a foreshadowing tracker with the chapter where each thread should pay off, plus due and overdue reminders.
-- **Check-up after every chapter**: typos, likely misspelled names, aliases and nicknames (variant characters, full-width letters, stray spaces inside names; fix all chapters in one click, undoable), sensitive words, crutch phrases, frequent repeats, AI-sounding prose (stock phrases like 「眼中闪过一丝」), mobile layout, overlong sentences, point-of-view slips, chapter-end hooks and more. Click any hit to jump to it in the text.
-- **Canon**: after each chapter, new characters, new places and state changes (injured, dead…) are collected so you can add them to your settings in one click. A dead character who shows up again is flagged; if the text says someone died but their card doesn't record it yet, later appearances get a lower-severity warning.
-- **Characters and settings**: cards for characters, places and rules, a relationship graph, and chatting with your own characters.
-- **Few interruptions**: every delete can be undone (chapters and works both have a trash), and reminder frequency is adjustable in Settings.
+**Keep the daily rhythm**
+
+- **Always know where today stands**: a daily-goal ring, streak days, an 18-week / last-30-days calendar, word and chapter milestones, and a warning before a missed day breaks your streak. A chapter buffer and planned publication dates show how long your stock lasts and when the next update is due.
+- **Fewer interruptions while you write**: every delete can be undone (chapters and works both have a trash), and how often reminders appear is adjustable in Settings.
+
+**Keep a long story straight**
+
+- **Outline and foreshadowing**: volumes and per-chapter outlines at a glance. Write down a thread together with the chapter where it should pay off, and Qianzhang reminds you when it is due or overdue, so a promise made in chapter 12 is not forgotten by chapter 300.
+- **Characters and settings**: cards for characters, places and rules, a relationship graph, and chatting with your own characters when you want to hear how they would talk.
+- **Canon, collected for you**: after each chapter, new characters, new places and state changes (injured, dead…) are gathered so you can add them to your settings in one click. A character recorded as dead who shows up again is flagged; if the text says someone died but their card does not record it yet, later appearances get a lower-severity warning.
+
+**Catch slips before your readers do**
+
+- **A check-up after every chapter**: typos, likely misspelled names, aliases and nicknames (variant characters, full-width letters, stray spaces inside names; fix all chapters in one click, undoable), sensitive words, crutch phrases, frequent repeats, AI-sounding prose (stock phrases like 「眼中闪过一丝」), mobile layout, overlong sentences, point-of-view slips, chapter-end hooks and more. Click any hit to jump to it in the text. The results are prompts for you to review, not verdicts.
+
+**Quiet, local, yours**
+
+- **Closing the window ends the program (Windows)**: close the standalone window and Qianzhang quits. If it had to open in your default browser, a tray icon and a "Quit Qianzhang" button in the sidebar save your work and quit.
+- **A quiet nudge when a new version is out (1.1.0)**: shortly after start-up, Qianzhang asks GitHub once whether a newer release exists. If so, a small note appears in the sidebar; click it to open the release page in your browser. It never downloads anything or replaces the exe by itself, it stays silent when you are offline, and one switch in Settings turns it off. The request carries none of your writing or personal data.
 - **Chinese by default, English available**: new installs start in Chinese. Switch to English in 设置 (Settings) → 界面语言 · Language; an existing language choice is preserved. The screenshots in this README show the English interface. AI replies follow the selected interface language.
 - **AI (optional)**: connect an OpenAI-compatible endpoint that allows browser cross-origin requests (CORS), such as DeepSeek, OpenAI or a local Ollama, to get an AI editor, writer's-block helper, continue/polish, a co-writer and character chat. Requests go directly from your browser to the configured endpoint. Depending on the feature, they may include selected manuscript text, character profiles, relationships, world rules, recent chapters and conversation history. The endpoint and model name are kept in the browser; the API key is encrypted by the local server (see below) and sent to the configured endpoint with each request. Usage limits and charges depend on the selected provider.
 
@@ -178,12 +191,25 @@ To report a problem, [open an issue](https://github.com/lalala-git/qianzhang-wri
 
 ## 能做什么
 
-- **码字与连更**：每日目标进度环、连更天数、18 周 / 近 30 天连更日历、字数章数里程碑、断更预警、存稿、计划发布日期与提醒。
-- **大纲与伏笔**：分卷目录、每章细纲；伏笔本登记计划回收的章节，到期和逾期会提醒。
-- **写完一章就体检**：错别字、疑似错名、别名与外号（异体字、全角、名字中间多空格，一键全书统一，可撤销）、敏感词、口头禅、高频重复、AI 腔（「眼中闪过一丝」这类套话）、手机排版、超长句、人称跳跃、章末钩子等，点一下就在正文里定位。
-- **正典**：写完一章自动整理新人物、新地点、状态变化（受伤、死亡……），一键收入设定；已死的角色又出场会提醒，正文里写了死亡但人物卡没记的也会降一级提醒。
-- **角色与设定**：人物、地点、规则卡片，人物关系图，和你笔下的角色直接聊天。
-- **少打扰**：删除都能撤销（章节和作品都有回收站），提醒频率可在设置里调。
+**把更新节奏稳住**
+
+- **今天写到哪一眼看清**：每日目标进度环、连更天数、18 周 / 近 30 天连更日历、字数章数里程碑，断更之前先提醒你。存稿和计划发布日期告诉你存稿还能撑几天、下一更什么时候到。
+- **写的时候少被打断**：删除都能撤销（章节和作品都有回收站），提醒多久出现一次可在设置里调。
+
+**把长篇理顺**
+
+- **大纲与伏笔**：分卷目录、每章细纲一屏看全。记下一条伏笔和计划回收它的章节，到期、逾期都会提醒，第 12 章埋下的坑，写到第 300 章也不会忘。
+- **角色与设定**：人物、地点、规则卡片，人物关系图；想听听角色会怎么说话，可以直接和你笔下的角色聊天。
+- **正典替你记**：写完一章，自动整理新人物、新地点和状态变化（受伤、死亡……），一键收入设定。已记录死亡的角色又出场会提醒；正文里写了死亡、人物卡还没记的，之后出场会降一级提醒。
+
+**在读者之前发现问题**
+
+- **写完一章就体检**：错别字、疑似错名、别名与外号（异体字、全角、名字中间多空格，一键全书统一，可撤销）、敏感词、口头禅、高频重复、AI 腔（「眼中闪过一丝」这类套话）、手机排版、超长句、人称跳跃、章末钩子等，点一下就在正文里定位。结果是供你核对的提示，不是定论。
+
+**安静、本地、归你**
+
+- **关窗就退出（Windows）**：关掉独立窗口，千章就退出。如果只能用默认浏览器打开，右下角托盘图标和侧栏里的「退出千章」按钮会先保存再退出。
+- **有新版本时轻轻提一句（1.1.0）**：启动后不久，千章会向 GitHub 查一次有没有更新的版本。有的话，侧栏里出现一条小提示，点一下用浏览器打开发布页面。它不会自己下载，也不会替换 exe；断网时不出声；在设置里一个开关就能关掉。这个请求不带你的任何文字或个人信息。
 - **中文默认、English 可选**：新安装首次打开为中文，可在 设置 → 界面语言 · Language 中切换 English（本说明的截图为英文界面）；已保存的语言选择继续生效，AI 回复跟随所选界面语言。
 - **AI（可选）**：连接支持浏览器跨域访问（CORS）的 OpenAI 兼容接口（DeepSeek、OpenAI、本机 Ollama……），多出 AI 责编、卡文助手、续写润色、陪写和角色聊天。请求由浏览器直接发送；使用相关功能时，可能包含选定正文、角色档案、人物关系、世界规则、最近章节及对话历史，具体内容取决于功能。接口地址和模型名保存在浏览器里，API 密钥由本地服务加密保存（见下），请求时会发给配置的接口；使用额度与费用由所选服务商决定。
 

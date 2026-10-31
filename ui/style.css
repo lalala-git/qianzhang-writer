@@ -1011,6 +1011,12 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px soli
 .input:focus-visible,select.input:focus-visible{outline:2px solid color-mix(in srgb,var(--primary) 45%,transparent);outline-offset:1px}
 .theme-opt{transition:border-color .15s,transform .15s}.theme-opt:hover{transform:translateY(-1px)}
 /* 退出按钮（由 Qianzhang.exe 启动时显示） */
+.update-note{display:flex;align-items:stretch;margin-top:8px;border:1px solid color-mix(in srgb,var(--accent,#2f6f5e) 40%,var(--border));border-radius:8px;background:color-mix(in srgb,var(--accent,#2f6f5e) 8%,transparent);overflow:hidden}
+.update-note[hidden]{display:none}
+.update-open{flex:1;text-align:left;background:none;border:0;padding:7px 10px;font:inherit;font-size:13px;color:var(--text);cursor:pointer}
+.update-open b{color:var(--accent,#2f6f5e)}
+.update-x{background:none;border:0;padding:0 8px;color:var(--muted);cursor:pointer;display:flex;align-items:center}
+.update-x:hover{color:var(--text)}
 .quit-btn{width:100%;justify-content:center;margin-top:8px;color:var(--text-2)}
 .quit-btn.attn{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 35%,var(--border))}
 .quit-done{max-width:520px;margin:18vh auto;padding:28px 32px;text-align:center;font-family:system-ui,sans-serif}
