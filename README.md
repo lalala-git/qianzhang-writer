@@ -46,29 +46,21 @@ Additional contributor: **[Codex (OpenAI)](https://github.com/codex)** — docum
 
 ## What it does
 
-**Keep the daily rhythm**
+- **Pick up where you stopped.** The home page shows today's word count against your goal, your streak and a calendar of recent weeks. After a day off it tells you which chapter you stopped at and where to start again.
+- **Outline and threads in one place.** Volumes and chapter outlines sit side by side. Write down a planted thread and the chapter where it should pay off; when that chapter gets close, it shows up on the home page.
+- **Characters, places and rules.** One card each, a relationship graph, and a chart of the chapters every character appears in (aliases count), so you can spot who has gone quiet for too long.
+- **A notes wall.** Ideas, dialogue scraps and research go on one wall. Attach a note to a chapter or a setting, and it is at hand when you write that chapter.
+- **A check after each chapter.** Typos, name slips, repeated phrases, sensitive words and layout problems are listed beside the text, and a click jumps to the spot. Treat the list as a second pair of eyes: you decide what to change.
+- **Opening and pacing.** A self-check of your first three chapters, and a chart of chapter lengths across the whole book. Read-only: nothing in your work is touched.
+- **Ready to publish.** Pick a platform preset, run the pre-publish check, then copy a chapter or export it as txt. Chapters you mark as published leave your stock count.
+- **Your work stays safe.** It is saved on your computer with rolling automatic backups. A deleted work goes to a trash you can restore from in Settings, and you can export a backup file or restore from one.
+- **Small helpers for long sessions.** Ctrl+K jumps to any chapter, setting or page. A dark-room focus mode (Ctrl+Shift+F) hides the rest. When a chapter will not come, there is a corner for tearing up a bad draft or popping bubble wrap.
+- **Closing the window ends the program (Windows).** Close the standalone window and Qianzhang quits. If it had to open in your default browser, the tray icon and the "Quit Qianzhang" button in the sidebar save your work and quit.
+- **Chinese or English.** Chinese by default; switch in 设置 (Settings) → 界面语言 · Language. The screenshots here show the English interface.
+- **Optional AI.** Connect a service of your own for an AI editor, writer's-block help, continue/polish, a co-writer and character chat. Nothing is sent until you connect one; what is sent and how the key is stored is explained below.
+- **A new-version reminder (1.1.0).** Shortly after start-up Qianzhang asks GitHub once whether a newer release exists. If so, a small note appears in the sidebar and clicking it opens the release page. Nothing is downloaded or replaced for you, it stays silent when you are offline, none of your writing is sent, and one switch in Settings turns it off.
 
-- **Always know where today stands**: a daily-goal ring, streak days, an 18-week / last-30-days calendar, word and chapter milestones, and a warning before a missed day breaks your streak. A chapter buffer and planned publication dates show how long your stock lasts and when the next update is due.
-- **Fewer interruptions while you write**: every delete can be undone (chapters and works both have a trash), and how often reminders appear is adjustable in Settings.
-
-**Keep a long story straight**
-
-- **Outline and foreshadowing**: volumes and per-chapter outlines at a glance. Write down a thread together with the chapter where it should pay off, and Qianzhang reminds you when it is due or overdue, so a promise made in chapter 12 is not forgotten by chapter 300.
-- **Characters and settings**: cards for characters, places and rules, a relationship graph, and chatting with your own characters when you want to hear how they would talk.
-- **Canon, collected for you**: after each chapter, new characters, new places and state changes (injured, dead…) are gathered so you can add them to your settings in one click. A character recorded as dead who shows up again is flagged; if the text says someone died but their card does not record it yet, later appearances get a lower-severity warning.
-
-**Catch slips before your readers do**
-
-- **A check-up after every chapter**: typos, likely misspelled names, aliases and nicknames (variant characters, full-width letters, stray spaces inside names; fix all chapters in one click, undoable), sensitive words, crutch phrases, frequent repeats, AI-sounding prose (stock phrases like 「眼中闪过一丝」), mobile layout, overlong sentences, point-of-view slips, chapter-end hooks and more. Click any hit to jump to it in the text. The results are prompts for you to review, not verdicts.
-
-**Quiet, local, yours**
-
-- **Closing the window ends the program (Windows)**: close the standalone window and Qianzhang quits. If it had to open in your default browser, a tray icon and a "Quit Qianzhang" button in the sidebar save your work and quit.
-- **Chinese by default, English available**: new installs start in Chinese. Switch to English in 设置 (Settings) → 界面语言 · Language; an existing language choice is preserved. The screenshots in this README show the English interface. AI replies follow the selected interface language.
-- **AI (optional)**: connect an OpenAI-compatible endpoint that allows browser cross-origin requests (CORS), such as DeepSeek, OpenAI or a local Ollama, to get an AI editor, writer's-block helper, continue/polish, a co-writer and character chat. Requests go directly from your browser to the configured endpoint. Depending on the feature, they may include selected manuscript text, character profiles, relationships, world rules, recent chapters and conversation history. The endpoint and model name are kept in the browser; the API key is encrypted by the local server (see below) and sent to the configured endpoint with each request. Usage limits and charges depend on the selected provider.
-- **A quiet nudge when a new version is out (1.1.0)**: shortly after start-up, Qianzhang asks GitHub once whether a newer release exists. If so, a small note appears in the sidebar; click it to open the release page in your browser. It never downloads anything or replaces the exe by itself, it stays silent when you are offline, and one switch in Settings turns it off. The request carries none of your writing or personal data.
-
-**Privacy and AI co-writing:** The API key is never kept in browser storage. The local server encrypts it into `data/app/ai-key.json`: on Windows with DPAPI, tied to your Windows account; elsewhere with AES-256-GCM using a key derived from this machine. A copied, synced or shared data folder therefore does not reveal the key, although this does not protect against malware running under your account. Keys that older versions left in browser storage are moved there automatically and then deleted from the browser. The co-writer starts **off** every time; the first time you turn it on with a model connected, it explains what will be sent and where. While it is on, pauses in typing send approximately the latest 800 characters, and the write page shows a persistent **Co-writer on · Turn off** indicator that switches it off in one click. **Export backup omits API keys by default**; tick the option to include the model connection and key (in plaintext). Backups still contain manuscript, world-building and chat data, and unknown fields from imported work files may be retained, so review backups before sharing.
+**Privacy and AI co-writing:** AI requests go straight from your browser to the service you configure, which must allow browser cross-origin requests (CORS). Depending on the feature, they can include selected manuscript text, character and world notes, recent chapters and the conversation so far; usage limits and charges are set by that service. The endpoint and model name are kept in the browser, and the key is sent to that service with each request. The API key is never kept in browser storage. The local server encrypts it into `data/app/ai-key.json`: on Windows with DPAPI, tied to your Windows account; elsewhere with AES-256-GCM using a key derived from this machine. A copied, synced or shared data folder therefore does not reveal the key, although this does not protect against malware running under your account. Keys that older versions left in browser storage are moved there automatically and then deleted from the browser. The co-writer starts **off** every time; the first time you turn it on with a model connected, it explains what will be sent and where. While it is on, pauses in typing send approximately the latest 800 characters, and the write page shows a persistent **Co-writer on · Turn off** indicator that switches it off in one click. **Export backup omits API keys by default**; tick the option to include the model connection and key (in plaintext). Backups still contain manuscript, world-building and chat data, and unknown fields from imported work files may be retained, so review backups before sharing.
 
 ## Install and run from source
 
@@ -191,29 +183,21 @@ To report a problem, [open an issue](https://github.com/lalala-git/qianzhang-wri
 
 ## 能做什么
 
-**把更新节奏稳住**
+- **接着昨天写。** 首页放着今天的字数和目标、连更天数，以及最近几周的日历。隔天没写，它会告诉你停在哪一章、今天从哪接。
+- **大纲和伏笔放一处。** 分卷目录和每章细纲并排看。记下一条埋下的伏笔，再选好打算回收它的章节，快写到那里时，首页就会提醒。
+- **人物、地点、规则。** 各有一张卡片，另有人物关系图，和一张每个角色在各章出场情况的图（别名也算），谁太久没露面一眼就能看出来。
+- **素材墙。** 灵感、对白片段、查到的资料都丢在一面墙上。笔记可以挂到某一章或某个设定上，写那一章时就在手边。
+- **写完一章检查一遍。** 错别字、人名写岔、重复的用语、敏感词、排版问题，列在正文旁边，点一下就跳到原处。把它当作多一双眼睛：改不改，你说了算。
+- **开篇和节奏。** 前三章的自查，以及全书各章篇幅的对比图。只读，不会改动你的作品。
+- **发布前准备好。** 选一个平台预设，做一遍发布前自查，再复制单章或导出 txt。标成已发布的章节会从存稿里扣掉。
+- **稿子不会丢。** 作品保存在你的电脑上，并有滚动的自动备份。删掉的作品先进回收站，可以在设置里恢复；也能导出备份文件，或从备份恢复。
+- **长时间写作的小帮手。** Ctrl+K 跳到任意章节、设定或页面；小黑屋专注模式（Ctrl+Shift+F）把其他东西都藏起来；卡文的时候，还有个角落可以撕烂废稿，或者捏捏泡泡纸。
+- **关窗就退出（Windows）。** 关掉独立窗口，千章就退出。如果只能用默认浏览器打开，右下角托盘图标和侧栏里的「退出千章」按钮会先保存再退出。
+- **中文或 English。** 中文默认，在 设置 → 界面语言 · Language 切换；本说明里的截图是英文界面。
+- **可选的 AI。** 连接你自己的服务，就有 AI 责编、卡文助手、续写润色、陪写和角色聊天。没连接之前不会发送任何内容；会发送什么、密钥怎么存，见下方说明。
+- **新版本提醒（1.1.0）。** 启动后不久，千章会向 GitHub 查一次有没有更新的发布；有的话，侧栏里出现一条小提示，点一下打开发布页面。它不会替你下载或替换任何东西，断网时不出声，也不发送你的任何文字，设置里一个开关就能关掉。
 
-- **今天写到哪一眼看清**：每日目标进度环、连更天数、18 周 / 近 30 天连更日历、字数章数里程碑，断更之前先提醒你。存稿和计划发布日期告诉你存稿还能撑几天、下一更什么时候到。
-- **写的时候少被打断**：删除都能撤销（章节和作品都有回收站），提醒多久出现一次可在设置里调。
-
-**把长篇理顺**
-
-- **大纲与伏笔**：分卷目录、每章细纲一屏看全。记下一条伏笔和计划回收它的章节，到期、逾期都会提醒，第 12 章埋下的坑，写到第 300 章也不会忘。
-- **角色与设定**：人物、地点、规则卡片，人物关系图；想听听角色会怎么说话，可以直接和你笔下的角色聊天。
-- **正典替你记**：写完一章，自动整理新人物、新地点和状态变化（受伤、死亡……），一键收入设定。已记录死亡的角色又出场会提醒；正文里写了死亡、人物卡还没记的，之后出场会降一级提醒。
-
-**在读者之前发现问题**
-
-- **写完一章就体检**：错别字、疑似错名、别名与外号（异体字、全角、名字中间多空格，一键全书统一，可撤销）、敏感词、口头禅、高频重复、AI 腔（「眼中闪过一丝」这类套话）、手机排版、超长句、人称跳跃、章末钩子等，点一下就在正文里定位。结果是供你核对的提示，不是定论。
-
-**安静、本地、归你**
-
-- **关窗就退出（Windows）**：关掉独立窗口，千章就退出。如果只能用默认浏览器打开，右下角托盘图标和侧栏里的「退出千章」按钮会先保存再退出。
-- **中文默认、English 可选**：新安装首次打开为中文，可在 设置 → 界面语言 · Language 中切换 English（本说明的截图为英文界面）；已保存的语言选择继续生效，AI 回复跟随所选界面语言。
-- **AI（可选）**：连接支持浏览器跨域访问（CORS）的 OpenAI 兼容接口（DeepSeek、OpenAI、本机 Ollama……），多出 AI 责编、卡文助手、续写润色、陪写和角色聊天。请求由浏览器直接发送；使用相关功能时，可能包含选定正文、角色档案、人物关系、世界规则、最近章节及对话历史，具体内容取决于功能。接口地址和模型名保存在浏览器里，API 密钥由本地服务加密保存（见下），请求时会发给配置的接口；使用额度与费用由所选服务商决定。
-- **有新版本时轻轻提一句（1.1.0）**：启动后不久，千章会向 GitHub 查一次有没有更新的版本。有的话，侧栏里出现一条小提示，点一下用浏览器打开发布页面。它不会自己下载，也不会替换 exe；断网时不出声；在设置里一个开关就能关掉。这个请求不带你的任何文字或个人信息。
-
-**隐私与 AI 陪写：** API 密钥不存浏览器。它由本地服务加密后写进 `data/app/ai-key.json`：Windows 上用 DPAPI，绑定当前 Windows 账户；其他系统用 AES-256-GCM，密钥由本机信息派生。拷贝、同步或误分享 data 文件夹不会泄露密钥，但这防不了以你的账户运行的恶意程序。旧版本留在浏览器里的密钥会自动搬过去，然后从浏览器删除。陪写每次打开都是**关闭**的；连好模型后第一次打开，会先说明要发送什么、发给谁。开着时每次停笔会发送最近约 800 字，写作页顶部一直显示「**陪写开 · 关闭**」，点一下就关。**导出备份默认不含 API 密钥**，勾选后才会附上模型连接和密钥（明文）。备份仍包含正文、设定和聊天等作品数据，导入文件中自带的其他字段也可能保留并再次导出，分享前请检查。
+**隐私与 AI 陪写：** AI 请求由浏览器直接发给你配置的服务，该服务需允许浏览器跨域访问（CORS）。视功能不同，请求可能带上选定正文、角色与世界设定、最近章节和此前的对话；额度与费用由该服务决定。接口地址和模型名保存在浏览器里，密钥会随每次请求发给该服务。API 密钥不存浏览器。它由本地服务加密后写进 `data/app/ai-key.json`：Windows 上用 DPAPI，绑定当前 Windows 账户；其他系统用 AES-256-GCM，密钥由本机信息派生。拷贝、同步或误分享 data 文件夹不会泄露密钥，但这防不了以你的账户运行的恶意程序。旧版本留在浏览器里的密钥会自动搬过去，然后从浏览器删除。陪写每次打开都是**关闭**的；连好模型后第一次打开，会先说明要发送什么、发给谁。开着时每次停笔会发送最近约 800 字，写作页顶部一直显示「**陪写开 · 关闭**」，点一下就关。**导出备份默认不含 API 密钥**，勾选后才会附上模型连接和密钥（明文）。备份仍包含正文、设定和聊天等作品数据，导入文件中自带的其他字段也可能保留并再次导出，分享前请检查。
 
 ## 从源码安装与启动
 
