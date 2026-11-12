@@ -241,13 +241,13 @@
       + g.chapters.map(item).join('')).join('');
   }
 
-  /** 写作页顶栏：放不下时先收起按钮文字（只留图标），还放不下再藏起章序和今日目标，最后才折成两行（不藏功能按钮）。按实际宽度判断，中英文、开不开检查面板都适用。 */
+  /** 写作页顶栏：放不下时一步步收：先收次要按钮（小黑屋、细纲）的文字，再藏章序和保存字样，再把所有按钮收成图标，再藏今日目标，最后才折成两行（不藏功能按钮）。按实际宽度判断，中英文、开不开检查面板都适用。 */
   function fitBar(bar) {
     if (!bar || !root.ResizeObserver) return;
     let raf = 0;
     const fit = () => { if (!bar.isConnected) { ro.disconnect(); mo.disconnect(); return; }
-      bar.classList.remove('compact', 'tight', 'bar-wrap');
-      if (bar.scrollWidth > bar.clientWidth + 1) { bar.classList.add('compact'); if (bar.scrollWidth > bar.clientWidth + 1) bar.classList.add('tight'); if (bar.scrollWidth > bar.clientWidth + 1) bar.classList.add('bar-wrap'); } };
+      bar.classList.remove('c1', 'c2', 'compact', 'tight', 'bar-wrap');
+      for (const k of ['c1', 'c2', 'compact', 'tight', 'bar-wrap']) { if (bar.scrollWidth <= bar.clientWidth + 1) break; bar.classList.add(k); } };
     const later = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(fit); };
     const ro = new ResizeObserver(later), mo = new MutationObserver(later);
     ro.observe(bar); mo.observe(bar, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden'] });
@@ -271,13 +271,13 @@
         + '<span class="grow"></span>'
         + '<button class="pill cp-badge" id="cp-badge" data-act="write.companionOff"' + (cp.on ? '' : ' hidden') + '><i></i>陪写开 · 关闭</button>'
         + '<span class="pill goal-pill' + (s.done ? ' ok' : '') + '" id="today-pill" title="今日码字 / 目标">今日 <b id="today-words">' + s.today.toLocaleString() + '</b> / ' + s.goal.toLocaleString() + '</span>'
-        + '<span class="pill" id="wc">' + words(c.text).toLocaleString() + ' 字</span>'
-        + '<button class="btn ghost sm' + (c.status === 'published' ? ' on ok' : '') + '" data-act="write.publish" title="' + (c.status === 'published' ? '本章已标为已发布，点一下改回未发布' : '本章还没发布（算在存稿里）。点一下先做发布前自查，再标为已发布') + '">' + icon('check') + (c.status === 'published' ? '已发布' : '标为已发布') + '</button>'
+        + '<span class="pill wc-pill" id="wc" title="本章字数">' + words(c.text).toLocaleString() + ' 字</span><span class="ed-save" id="ed-save" role="status"><i></i><span></span></span>'
+        + '<button class="btn ghost sm' + (c.status === 'published' ? ' on ok' : '') + '" data-pri="1" data-act="write.publish" title="' + (c.status === 'published' ? '本章已标为已发布，点一下改回未发布' : '本章还没发布（算在存稿里）。点一下先做发布前自查，再标为已发布') + '">' + icon('circleCheck') + (c.status === 'published' ? '已发布' : '标为已发布') + '</button>'
         + (reader.on ? '<button class="btn ghost sm on" data-act="write.read" title="停止朗读（Esc）">' + icon('volume') + '停止朗读</button>' : '')
         + '<button class="btn ghost sm icon-only" data-act="write.relief" title="解压：撕烂废稿（正文不受影响）" aria-label="解压">' + icon('trash') + '</button>'
-        + '<button class="btn ghost sm" data-act="write.focus" title="小黑屋专注模式（Ctrl+Shift+F）">' + icon('fire') + '小黑屋</button>'
-        + '<button class="btn ghost sm' + (showOutline ? ' on' : '') + '" data-act="write.outline" title="本章细纲与书中时间">' + icon('list') + '细纲</button>'
-        + '<button class="btn ghost sm' + (panel ? ' on' : '') + '" data-act="write.panel" title="检查：错名、敏感词、设定规则、发布前自查，一处看完（Ctrl+.）">' + icon('check') + '检查</button>'
+        + '<button class="btn ghost sm" data-pri="2" data-act="write.focus" title="小黑屋专注模式（Ctrl+Shift+F）">' + icon('fire') + '小黑屋</button>'
+        + '<button class="btn ghost sm' + (showOutline ? ' on' : '') + '" data-pri="2" data-act="write.outline" title="本章细纲与书中时间">' + icon('list') + '细纲</button>'
+        + '<button class="btn ghost sm' + (panel ? ' on' : '') + '" data-act="write.panel" title="检查：错名、敏感词、设定规则、发布前自查，一处看完（Ctrl+.）">' + icon('shieldCheck') + '检查</button>'
         + '<button class="btn ghost sm" data-act="write.aiWrite" title="AI：责编（检查/润色）· 陪写（续写/卡文）· 查询（Ctrl+J）">' + icon('sparkle') + 'AI</button>'
         + '<details class="menu"><summary class="icon-btn" title="更多">' + icon('more') + '</summary><div class="menu-pop">'
         + '<button data-act="write.companion" class="' + (cp.on ? 'on' : '') + '" aria-pressed="' + cp.on + '">' + icon('chat') + 'AI 陪写：停笔时给一句边注<kbd>Alt+C</kbd></button><button data-act="write.prepub">' + icon('share') + '发布前自查<kbd>Alt+P</kbd></button><button data-act="write.foreshadow">' + icon('flag') + '在本章埋一个伏笔</button><button data-act="write.notes">' + icon('note') + '本章素材' + ((app.project.notes({ link:c.id }).length) ? '（' + app.project.notes({ link:c.id }).length + '）' : '') + '…<kbd>Alt+M</kbd></button><hr>'
@@ -307,23 +307,34 @@
       fitBar(document.querySelector('.editor-bar'));
       const t = document.getElementById('ch-text'), title = document.getElementById('ch-title'); if (!t) return;
       mention(app, t);
-      const id = t.dataset.id, grow = () => { t.style.height = 'auto'; t.style.height = Math.max(t.scrollHeight, 420) + 'px'; };
+      const id = t.dataset.id, ed = t.closest('.editor');
+      /* 正文随内容长高，整页一起滚（不在框里滚）；内容变少时先记住滚动位置，免得页面跳一下 */
+      const grow = () => { if (t.scrollHeight > t.clientHeight + 1) { t.style.height = t.scrollHeight + 'px'; return; } const st = ed ? ed.scrollTop : 0; t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; if (ed && ed.scrollTop !== st) ed.scrollTop = st; };
+      /* 在文末接着写时，让正在写的那一行停在窗口下方约三成以上，不贴着底边 */
+      const keepCaret = () => { if (!ed || t.selectionEnd < t.value.length - 2) return; const er = ed.getBoundingClientRect(), room = Math.min(260, er.height * 0.3), y = t.getBoundingClientRect().bottom; if (y > er.bottom - room) ed.scrollTop += y - (er.bottom - room); };
+      t._grow = grow;
       grow();
+      if (root.ResizeObserver) { let w0 = t.clientWidth; const ro = new ResizeObserver(() => { if (!t.isConnected) return ro.disconnect(); if (t.clientWidth !== w0) { w0 = t.clientWidth; grow(); } }); ro.observe(t); } /* 窗口变宽变窄、开关检查面板后重新算高度 */
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (t.isConnected) grow(); });
+      /* 点正文下方的空白处：光标放到文末接着写；点两侧空白：回到正文原来的光标处 */
+      if (ed) ed.addEventListener('mousedown', e => { if (e.button !== 0 || e.target.closest('input,textarea,select,button,a,summary,details,label,.editor-bar,.cp-feed,.nn-card,.resume-chip,.echo,.focus-hud,.obw-bar,[contenteditable]')) return;
+        const r = t.getBoundingClientRect(); if (e.clientY < r.top) return; e.preventDefault(); t.focus({ preventScroll:true }); if (e.clientY > r.bottom - 4) { t.setSelectionRange(t.value.length, t.value.length); keepCaret(); } });
+      if (app.setSaveState) app.setSaveState(app.saveState || 'idle');
       cpDraw(id);
       const CK = 'qianzhang:caret:' + app.project.id; let ct = null;
       const saveCaret = () => { clearTimeout(ct); ct = setTimeout(() => { try { localStorage.setItem(CK, JSON.stringify({ id, pos:t.selectionStart, at:Date.now() })); } catch (e) {} }, 300); };
       ['keyup', 'click', 'input'].forEach(ev => t.addEventListener(ev, saveCaret));
       const ri = Pages.write.resumeInfo(app);
       if (ri && ri.id === id && ri.pos > 0 && !app.focus) {
-        t.setSelectionRange(ri.pos, ri.pos); const main = document.getElementById('main');
-        if (!ri.atEnd && main) { const y = t.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop + t.scrollHeight * (ri.pos / Math.max(1, t.value.length)); main.scrollTop = Math.max(0, y - main.clientHeight / 3); }
+        t.setSelectionRange(ri.pos, ri.pos); const main = ed || document.getElementById('main');
+        if (!ri.atEnd && main) { const y = t.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop + t.scrollHeight * (ri.pos / Math.max(1, t.value.length)); main.scrollTop = Math.max(0, y - main.clientHeight / 3); } else if (ri.atEnd && main) main.scrollTop = main.scrollHeight;
         try { t.focus({ preventScroll:true }); } catch (e) {}
         if (ri.min >= 5 && ri.snip) { const chip = document.createElement('div'); chip.className = 'resume-chip'; chip.innerHTML = UI.icon('pen') + '<span>上次停在「' + esc(ri.snip) + '」 · ' + esc(ri.ago) + '</span>'; const pp = t.closest('.paper'); if (pp) { pp.appendChild(chip); setTimeout(() => chip.classList.add('out'), 4500); setTimeout(() => chip.remove(), 5200); } }
       }
       let timer = null;
       t.addEventListener('input', () => {
         app.project.updateChapter(id, { text:t.value });
-        document.getElementById('wc').textContent = words(t.value).toLocaleString() + ' 字'; grow(); const cw = document.querySelector('.chapter-item.on .ch-words'); if (cw) cw.textContent = words(t.value).toLocaleString();
+        document.getElementById('wc').textContent = words(t.value).toLocaleString() + ' 字'; grow(); keepCaret(); const cw = document.querySelector('.chapter-item.on .ch-words'); if (cw) cw.textContent = words(t.value).toLocaleString();
         const s = root.QZCraft.streak(app.project.data.writing.daily, app.project.data.writing.goal);
         document.getElementById('today-words').textContent = s.today.toLocaleString();
         document.getElementById('today-pill').classList.toggle('ok', s.done);
@@ -480,12 +491,12 @@
       paper: app => {
         const cur = paperPrefs(), opt = (k, list) => list.map(x => '<option value="' + x[0] + '"' + (String(cur[k]) === String(x[0]) ? ' selected' : '') + '>' + x[1] + '</option>').join('');
         UI.modal({ title:'字体与纸张', body:'<div class="form-grid"><label class="field"><span>字体</span><select class="select" id="pp-font">' + opt('font', [['serif', '宋体（默认）'], ['kai', '楷体'], ['sans', '黑体'], ['fangsong', '仿宋']]) + '</select></label>'
-          + '<label class="field"><span>字号</span><select class="select" id="pp-size">' + opt('size', [[16, '16'], [17, '17'], [18, '18（默认）'], [20, '20'], [22, '22'], [24, '24']]) + '</select></label>'
-          + '<label class="field"><span>行距</span><select class="select" id="pp-lh">' + opt('lh', [[1.7, '紧凑'], [2, '标准'], [2.3, '宽松']]) + '</select></label>'
+          + '<label class="field"><span>字号</span><select class="select" id="pp-size">' + opt('size', [['auto', '自动（随窗口）'], [16, '16'], [17, '17'], [18, '18'], [20, '20'], [22, '22'], [24, '24'], [26, '26']]) + '</select></label>'
+          + '<label class="field"><span>行距</span><select class="select" id="pp-lh">' + opt('lh', [[1.7, '紧凑'], [1.9, '标准'], [2.2, '宽松']]) + '</select></label>'
           + '<label class="field"><span>纸张</span><select class="select" id="pp-paper">' + opt('paper', [['', '白纸'], ['green', '护眼绿'], ['parch', '羊皮纸'], ['ink', '墨夜']]) + '</select></label>'
-          + '<label class="field"><span>版心宽度</span><select class="select" id="pp-w">' + opt('w', [[640, '窄'], [780, '标准'], [960, '宽']]) + '</select></label></div><p class="muted small">只影响这台电脑上的显示，不会改动正文。改动立即生效。</p>',
+          + '<label class="field"><span>版心宽度</span><select class="select" id="pp-w">' + opt('w', [['auto', '自动（约 44 字一行）'], [34, '窄（约 34 字一行）'], [52, '宽（约 52 字一行）']]) + '</select></label></div><p class="muted small">「自动」会跟着窗口大小调整字号和每行字数。只影响这台电脑上的显示，不会改动正文。改动立即生效。</p>',
           buttons:[{ label:'恢复默认', value:'reset' }, { label:'完成', primary:true, value:true }],
-          onOpen: w => w.addEventListener('change', () => { savePaper({ font:w.querySelector('#pp-font').value, size:+w.querySelector('#pp-size').value, lh:+w.querySelector('#pp-lh').value, paper:w.querySelector('#pp-paper').value, w:+w.querySelector('#pp-w').value }); }) })
+          onOpen: w => w.addEventListener('change', () => { const num = v => v === 'auto' ? 'auto' : +v; savePaper({ font:w.querySelector('#pp-font').value, size:num(w.querySelector('#pp-size').value), lh:+w.querySelector('#pp-lh').value, paper:w.querySelector('#pp-paper').value, w:num(w.querySelector('#pp-w').value) }); }) })
           .then(v => { if (v === 'reset') { savePaper(null); UI.toast('已恢复默认排版'); } });
       },
       read: app => reader.on ? stopRead() : startRead(app),
@@ -551,12 +562,18 @@
   };
 
   /* 字体与纸张：存在本机 localStorage，通过 CSS 变量作用在稿纸上 */
-  const PAPER = 'qianzhang:paper', PAPER_DEF = { font:'serif', size:18, lh:2, paper:'', w:780 };
-  function paperPrefs() { try { return Object.assign({}, PAPER_DEF, JSON.parse(localStorage.getItem(PAPER) || '{}')); } catch (e) { return Object.assign({}, PAPER_DEF); } }
+  const PAPER = 'qianzhang:paper', PAPER_DEF = { font:'serif', size:'auto', lh:1.9, paper:'', w:'auto' };
+  /* 字号、版心默认「自动」：跟着写作区宽度变（见 style.css「写作页 · 纸面」）。旧版存下的 18 号字、780 宽、行距 2 就是当年的默认值，按「自动 / 标准」读 */
+  function paperPrefs() { let s = {}; try { s = JSON.parse(localStorage.getItem(PAPER) || '{}') || {}; } catch (e) {} const p = Object.assign({}, PAPER_DEF, s);
+    if (p.size !== 'auto' && (+p.size === 18 || !(+p.size >= 12 && +p.size <= 40))) p.size = 'auto'; else if (p.size !== 'auto') p.size = +p.size;
+    const w = { 640:34, 780:'auto', 960:52 }[p.w]; if (w !== undefined) p.w = w; if (p.w !== 'auto' && !(+p.w >= 20 && +p.w <= 80)) p.w = 'auto'; else if (p.w !== 'auto') p.w = +p.w;
+    p.lh = { 2:1.9, 2.3:2.2 }[+p.lh] || +p.lh; if (!(p.lh >= 1.3 && p.lh <= 3)) p.lh = 1.9;
+    return p; }
   function applyPaper() { if (typeof document === 'undefined') return; const p = paperPrefs(), b = document.body; if (!b) return;
-    b.style.setProperty('--ed-size', p.size + 'px'); b.style.setProperty('--ed-lh', p.lh); b.style.setProperty('--ed-w', p.w + 'px'); b.dataset.edFont = p.font; b.dataset.paper = p.paper || ''; }
-  function savePaper(p) { if (p) localStorage.setItem(PAPER, JSON.stringify(p)); else localStorage.removeItem(PAPER); applyPaper(); }
-  Pages.write_applyPaper = applyPaper;
+    if (p.size === 'auto') b.style.removeProperty('--ed-size'); else b.style.setProperty('--ed-size', p.size + 'px'); b.style.setProperty('--ed-lh', p.lh);
+    if (p.w === 'auto') b.style.removeProperty('--ed-cpl'); else b.style.setProperty('--ed-cpl', p.w); b.style.removeProperty('--ed-w'); b.dataset.edFont = p.font; b.dataset.paper = p.paper || ''; }
+  function savePaper(p) { if (p) localStorage.setItem(PAPER, JSON.stringify(p)); else localStorage.removeItem(PAPER); applyPaper(); const t = typeof document !== 'undefined' && document.getElementById('ch-text'); if (t && t._grow) requestAnimationFrame(t._grow); }
+  Pages.write_applyPaper = applyPaper; Pages.write_paperPrefs = paperPrefs;
 
   /* 朗读校对：用浏览器自带的语音，从光标所在段落开始逐段朗读并选中当前段，耳朵比眼睛更容易听出别扭句子。 */
   const reader = { on:false, timer:null };

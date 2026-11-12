@@ -95,3 +95,21 @@ console.log('页面渲染：六个页面、空状态与 XSS 转义通过');
   assert.ok(!P.home.actions.example, '示例动作已移除');
   console.log('空书架：只有新建作品，没有示例入口通过');
 }
+
+/* 写作页：正文是随内容长高的纸（不是带边框的小框），字号和版心随宽度变；两个按钮图标要能分清；顶栏有保存状态；旧的「字体与纸张」默认值读成「自动」 */
+{
+  const css = require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'ui', 'style.css'), 'utf8');
+  assert.match(css, /textarea\.chapter-text:focus-visible[^{]*\{[^}]*outline:none/, '正文聚焦时不画描边（全局 textarea:focus-visible 不能盖过它）');
+  assert.match(css, /\.page-write \.editor\{[^}]*container-type:inline-size/, '写作区是尺寸容器，字号和版心随宽度变');
+  const w = P.write.render(app, [ch.id]);
+  const iconOf = act => ((w.split('data-act="' + act + '"')[1] || '').split('</button>')[0].match(/<path d="([^"]+)"/) || [])[1];
+  assert.ok(iconOf('write.publish') && iconOf('write.panel') && iconOf('write.publish') !== iconOf('write.panel'), '「标为已发布」和「检查」图标不同');
+  assert.ok(w.includes('id="ed-save"'), '写作页顶栏显示保存状态');
+  localStorage.setItem('qianzhang:paper', JSON.stringify({ font:'kai', size:18, lh:2, paper:'', w:780 }));
+  assert.deepEqual(P.write_paperPrefs(), { font:'kai', size:'auto', lh:1.9, paper:'', w:'auto' }, '旧版默认值 = 自动');
+  localStorage.setItem('qianzhang:paper', JSON.stringify({ size:22, lh:2.3, w:960, paper:'ink' }));
+  const p2 = P.write_paperPrefs(); assert.deepEqual([p2.size, p2.lh, p2.w, p2.paper], [22, 2.2, 52, 'ink'], '自己选过的字号、行距、版心保留');
+  localStorage.setItem('qianzhang:paper', '{bad'); assert.equal(P.write_paperPrefs().size, 'auto', '设置坏了按默认');
+  localStorage.removeItem('qianzhang:paper');
+  console.log('写作页纸面、顶栏图标与排版设置通过');
+}

@@ -40,3 +40,15 @@ assert.ok(/basename\(exeDir\)\.toLowerCase\(\) === 'dist'/.test(L) && /path\.joi
   assert.strictEqual(guiSubsystem(f), 3); assert.strictEqual(fs.readFileSync(f).readUInt16LE(0x80 + 24 + 68), 2); fs.unlinkSync(f);
   assert.ok(/--app=/.test(L) && /--user-data-dir=/.test(L) && /instance\.json/.test(L) && /7811/.test(L), '启动器应开独立窗口、单实例、避开 7801');
 }
+
+/* 窗口外壳：按每个显示器的 DPI 排版（PerMonitorV2），大屏上整体放大（1920×1080 不放大，2560×1440 约 1.2 倍） */
+{
+  const host = fs.readFileSync(path.join(__dirname, '..', 'tools', 'pack', 'host', 'QianzhangHost.cs'), 'utf8'), man = fs.readFileSync(path.join(__dirname, '..', 'tools', 'pack', 'host', 'app.manifest'), 'utf8');
+  assert.ok(/PerMonitorV2/.test(man), '清单声明 PerMonitorV2');
+  assert.ok(/web\.ZoomFactor = z/.test(host) && /ZoomFactorChanged/.test(host), '外壳设置并记住页面缩放');
+  const m = host.match(/wa\.Width \/ s \/ ([\d.]+), wa\.Height \/ s \/ ([\d.]+)\)/), lo = host.match(/Math\.Max\(([\d.]+), Math\.Min\(([\d.]+), z\)\)/);
+  const auto = (w, h, dpi) => { const s = dpi / 96; let z = Math.min(w / s / +m[1], h / s / +m[2]); z = Math.round(z * 20) / 20; return Math.max(+lo[1], Math.min(+lo[2], z)); };
+  assert.strictEqual(auto(1920, 1040, 96), 1); assert.strictEqual(auto(1366, 728, 96), 1); assert.strictEqual(auto(2560, 1392, 96), 1.2);
+  assert.strictEqual(auto(3840, 2088, 144), 1.2, '4K 150% 与 2K 100% 一样'); assert.strictEqual(auto(3840, 2112, 96), 1.5, '最多 1.5 倍');
+  console.log('窗口外壳 DPI 与大屏缩放通过');
+}

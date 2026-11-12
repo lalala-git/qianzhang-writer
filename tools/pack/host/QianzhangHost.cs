@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -184,13 +185,17 @@ sealed class MainForm : Form {
   readonly NotifyIcon tray = new NotifyIcon();
   string origin = "";
   bool closingStarted, closingDone;
+  double userZoom, appliedZoom; string zoomScreen = "";
+  [DllImport("user32.dll")] static extern uint GetDpiForWindow(IntPtr hwnd);
 
   public MainForm(Engine engine) {
     this.engine = engine;
     Text = "千章";
     var appIcon = Program.AppIcon(Size.Empty); if (appIcon != null) Icon = appIcon;
     StartPosition = FormStartPosition.CenterScreen;
-    Size = new Size(1320, 880);
+    /* 第一次打开：按屏幕大小给一个合适的窗口（大屏上同步放大），以后记住用户自己拖的大小 */
+    { var wa = Screen.PrimaryScreen.WorkingArea; double dpi = 96; try { using (var g = Graphics.FromHwnd(IntPtr.Zero)) dpi = g.DpiX; } catch (Exception) { }
+      double k = dpi / 96.0 * AutoZoom(wa, dpi); Size = new Size(Math.Min(wa.Width - 40, (int)(1320 * k)), Math.Min(wa.Height - 40, (int)(880 * k))); }
     MinimumSize = new Size(720, 480);
     BackColor = Color.FromArgb(246, 244, 239);
     RestoreSavedBounds();
@@ -226,6 +231,9 @@ sealed class MainForm : Form {
       st.IsStatusBarEnabled = false;
       st.IsGeneralAutofillEnabled = false;
       st.IsPasswordAutosaveEnabled = false;
+      LoadZoom(); ApplyZoom();
+      web.ZoomFactorChanged += (o, a) => OnZoomChanged();
+      LocationChanged += (o, a) => { if (Screen.FromControl(this).DeviceName != zoomScreen) ApplyZoom(); };
       web.CoreWebView2.DocumentTitleChanged += (o, a) => { string t = web.CoreWebView2.DocumentTitle; Text = string.IsNullOrEmpty(t) || t.StartsWith("http") ? "千章" : t; };
       web.CoreWebView2.NewWindowRequested += (o, a) => { a.Handled = true; if (origin != "" && a.Uri.StartsWith(origin)) web.CoreWebView2.Navigate(a.Uri); else Program.OpenExternal(a.Uri); };
       web.CoreWebView2.NavigationStarting += (o, a) => { if (origin != "" && !a.Uri.StartsWith(origin) && !a.Uri.StartsWith("about:") && !a.Uri.StartsWith("data:")) { a.Cancel = true; Program.OpenExternal(a.Uri); } };
@@ -255,6 +263,30 @@ sealed class MainForm : Form {
     Directory.CreateDirectory(dst);
     foreach (string f in Directory.GetFiles(src)) { if (Path.GetFileName(f) == "LOCK") continue; File.Copy(f, Path.Combine(dst, Path.GetFileName(f)), true); }
     foreach (string d in Directory.GetDirectories(src)) CopyDir(d, Path.Combine(dst, Path.GetFileName(d)));
+  }
+
+  /* 大屏自动放大：Windows 显示缩放是 100% 的 2K/4K 屏上，界面按 96 DPI 排版，字小、两边空。
+   * 按窗口所在显示器的有效大小（扣掉 Windows 缩放后的宽高）给整个页面一个缩放：1920×1080 及以下 1.0，2560×1440 约 1.2，最多 1.5。
+   * 用户自己按 Ctrl+滚轮 / Ctrl+加减号 调过，就记在 zoom.txt 里一直用用户的；调回和自动值一样就恢复自动。 */
+  internal static double AutoZoom(Rectangle wa, double dpi) {
+    double s = dpi > 0 ? dpi / 96.0 : 1, z = Math.Min(wa.Width / s / 2133.0, wa.Height / s / 1160.0);
+    z = Math.Round(z * 20) / 20; return Math.Max(1.0, Math.Min(1.5, z));
+  }
+  double WindowDpi() { try { uint d = GetDpiForWindow(Handle); if (d > 0) return d; } catch (Exception) { } try { using (var g = CreateGraphics()) return g.DpiX; } catch (Exception) { return 96; } }
+  double CurrentAutoZoom() { var sc = Screen.FromControl(this); zoomScreen = sc.DeviceName; return AutoZoom(sc.WorkingArea, WindowDpi()); }
+  string ZoomFile { get { return Path.Combine(Program.AppDir, "zoom.txt"); } }
+  void LoadZoom() { try { double z; if (File.Exists(ZoomFile) && double.TryParse(File.ReadAllText(ZoomFile).Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out z) && z >= 0.25 && z <= 5) userZoom = z; } catch (Exception) { } }
+  void ApplyZoom() {
+    if (web.CoreWebView2 == null) return;
+    double auto = CurrentAutoZoom(), z = userZoom > 0 ? userZoom : auto;
+    if (Math.Abs(web.ZoomFactor - z) < 0.001) { appliedZoom = z; return; }
+    appliedZoom = z; web.ZoomFactor = z;
+    Program.Log("界面缩放 " + z.ToString("0.00", CultureInfo.InvariantCulture) + (userZoom > 0 ? "（用户调过）" : "（按屏幕自动）"));
+  }
+  void OnZoomChanged() {
+    double z = web.ZoomFactor; if (Math.Abs(z - appliedZoom) < 0.001) return;
+    appliedZoom = z; double auto = CurrentAutoZoom();
+    try { if (Math.Abs(z - auto) < 0.001) { userZoom = 0; if (File.Exists(ZoomFile)) File.Delete(ZoomFile); } else { userZoom = z; File.WriteAllText(ZoomFile, z.ToString("0.###", CultureInfo.InvariantCulture)); } } catch (Exception) { }
   }
 
   void ShowMain() { if (closingStarted) return; if (!Visible) Show(); if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal; Activate(); BringToFront(); }

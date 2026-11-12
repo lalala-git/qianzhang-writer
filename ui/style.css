@@ -10,7 +10,7 @@
   --shadow-lg:0 24px 60px rgba(30,25,15,.18);
   --r-sm:8px;--r:12px;--r-lg:18px;--r-xl:24px;
   --font:system-ui,-apple-system,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC","Hiragino Sans GB",sans-serif;
-  --font-serif:"Songti SC","Noto Serif CJK SC","Source Han Serif SC","SimSun",serif;
+  --font-serif:"Songti SC","Noto Serif SC","Noto Serif CJK SC","Source Han Serif SC","Source Han Serif CN","SimSun",serif;
   --side:248px;--ease:cubic-bezier(.2,.7,.2,1);
   color-scheme:light;
 }
@@ -1027,3 +1027,58 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px soli
 html[lang=en] .menu-pop { max-width:min(420px, 92vw); } html[lang=en] .menu-pop button { white-space:normal; } .menu-pop kbd { flex:none; }
 /* 窄窗口：纸张有左右外边距时不再写死 100% 宽，免得右边被裁掉一截 */
 @media (max-width:1000px) { .paper { width:auto; } }
+
+/* ---------- 写作页 · 纸面（2026-11 重排） ----------
+ * 正文是一张随内容长高的纸：没有输入框边框和聚焦框，整页一起滚；字号和版心跟着写作区宽度变，大窗口不再是中间一条窄缝。
+ * 版心按「每行约多少字」算（默认约 44 字），字号 17–22px；「字体与纸张」里选了固定值就用固定值（--ed-size / --ed-cpl）。
+ * 写作区（.editor）是尺寸容器，下面的 cqi = 写作区宽度的 1%。 */
+.page-write .editor{container-type:inline-size;background:var(--bg)}
+.write-layout .paper{
+  --ed-fs:var(--ed-size, clamp(17px, calc(15px + .38cqi), 22px));
+  --ed-px:clamp(20px, 5cqi, 76px);
+  --ed-gut:clamp(0px, calc(6cqi - 54px), 56px);
+  flex:1 0 auto;position:relative;width:min(100% - 2 * var(--ed-gut), calc(var(--ed-cpl, 44) * var(--ed-fs) * 1.02 + 2 * var(--ed-px)));max-width:none;
+  margin:var(--ed-gut) auto;padding:clamp(28px, 4cqi, 64px) var(--ed-px) max(120px, 32vh);
+  background:var(--surface);border:0;border-radius:0;box-shadow:none;cursor:text}
+@container (min-width:900px){
+  .write-layout .paper{border-radius:16px;box-shadow:0 1px 2px rgba(30,25,15,.04),0 8px 28px rgba(30,25,15,.06)}
+  [data-theme=dark] .write-layout .paper{box-shadow:0 1px 2px rgba(0,0,0,.35),0 10px 30px rgba(0,0,0,.3)}
+}
+.write-layout .chapter-title{font-size:calc(var(--ed-fs) * 1.6);line-height:1.35;margin-bottom:calc(var(--ed-fs) * 1.2);padding:0;cursor:text}
+.write-layout .chapter-title.long{font-size:calc(var(--ed-fs) * 1.3)}
+.write-layout .chapter-text{display:block;padding:0;min-height:calc(var(--ed-fs) * var(--ed-lh, 1.9) * 8);font-size:var(--ed-fs);line-height:var(--ed-lh, 1.9);letter-spacing:.02em;cursor:text}
+/* 根源：全局的 textarea:focus-visible 无障碍描边（特异度更高）盖过了 .chapter-text 的 outline:none，正文聚焦时就成了一个带边框的小框 */
+textarea.chapter-text:focus,textarea.chapter-text:focus-visible,input.chapter-title:focus,input.chapter-title:focus-visible{outline:none;box-shadow:none}
+.chapter-text::placeholder,.chapter-title::placeholder{color:var(--muted);opacity:.7}
+.write-layout .outline-box{margin:0 0 calc(var(--ed-fs) * 1.3)}
+.write-layout .paper > .resume-chip{cursor:default}
+
+/* 顶栏：先收次要按钮的字，再藏章序和保存字样，再全部收成图标 */
+.editor-bar.c1 .btn.ghost.sm[data-pri="2"]{font-size:0;gap:0;padding:0 9px}
+.editor-bar.c1 .btn.ghost.sm[data-pri="2"] svg{width:17px;height:17px}
+.editor-bar.c2>.ch-pos,.editor-bar.c2 .ed-save span{display:none}
+.ed-save{display:inline-flex;align-items:center;gap:6px;flex:none;white-space:nowrap;font-size:12.5px;color:var(--muted)}
+.ed-save i{width:7px;height:7px;border-radius:50%;background:var(--ok);opacity:.85}
+.ed-save.busy i{background:var(--warn);animation:pulse 1s infinite}
+.ed-save.err{color:var(--danger)}.ed-save.err i{background:var(--danger)}
+
+/* 目录：窄的时候也看得清章名和字数 */
+.chapter-item .ch-title{min-width:3em}
+.chapter-item .ch-words{flex:none}
+
+/* 中等宽度窗口（761–1100）：左侧导航收成图标栏，把地方让给目录和正文 */
+@media (min-width:761px) and (max-width:1100px){
+  :root{--side:76px}
+  .sidebar{padding:16px 8px 12px;gap:4px}
+  .brand{align-items:center;padding:2px 0 12px}.brand small{display:none}.brand .wordmark{font-size:20px;letter-spacing:.02em}
+  .project-switch{align-items:center;text-align:center;padding:8px 4px;margin-bottom:6px}
+  .project-switch .ps-label,.project-switch .ps-caret{display:none}
+  .project-switch .ps-title{font-size:12px;line-height:1.3;text-align:center}
+  .pal-btn{justify-content:center;margin:2px 0 8px;padding:8px 0}.pal-btn span,.pal-btn kbd{display:none}
+  .nav-item{position:relative;flex-direction:column;gap:3px;padding:8px 2px;font-size:12px;text-align:center;align-items:center}
+  .nav-badge{position:absolute;top:2px;right:6px;margin:0;height:16px;min-width:16px;padding:0 4px;font-size:10.5px}
+  .side-foot{flex-direction:column;gap:6px;padding:10px 0 0}
+  .save-state{flex:none}.save-state span{display:none}
+  .update-open{font-size:12px;padding:6px 4px;text-align:center}.update-x{display:none}
+  .sidebar .btn.quit-btn{font-size:0;gap:0;padding:0}.sidebar .btn.quit-btn svg{width:18px;height:18px}
+}

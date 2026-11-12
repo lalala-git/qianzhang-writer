@@ -170,6 +170,8 @@
       const el = document.getElementById('save-state'); if (!el) return;
       const map = { idle:['', '已同步'], dirty:['busy', '有改动…'], saving:['busy', '保存中…'], saved:['ok', '已保存到本地文件'], conflict:['err', '另一个窗口改过，请刷新'], local:['ok', '已保存在浏览器'], error:['err', '未保存 · 重试中'] };
       el.className = 'save-state ' + map[s][0]; el.querySelector('span').textContent = map[s][1];
+      const es = document.getElementById('ed-save'); /* 写作页顶栏的小字：打字时只让小圆点变色，不来回闪字 */
+      if (es) { const word = { idle:'已保存', saved:'已保存', local:'已保存', error:'未保存', conflict:'有冲突' }[s], sp = es.querySelector('span'); es.className = 'ed-save ' + map[s][0]; es.title = map[s][1]; if (word) sp.textContent = word; else if (!sp.textContent) sp.textContent = '保存中…'; }
     },
     /* ---------- 主题 ---------- */
     theme: function () { return localStorage.getItem(THEME) || 'light'; },

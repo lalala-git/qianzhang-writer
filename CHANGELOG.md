@@ -12,6 +12,11 @@
 - English interface: your own chapter titles, outlines, book titles and card summaries are no longer half machine-translated (e.g. "Chapter 1 半张剑谱"); fixed half-Chinese phrases such as the chapter counter, foreshadowing due line, word milestones ("10k chars"), "Due soon" / "Overdue" tags and the delete-work button; long menu items wrap instead of pushing shortcuts out of the menu.
 - Small labels (tags, current-work label, sidebar tagline and similar) are now at least 12px for easier reading of Chinese text.
 - Narrow windows: the manuscript page no longer gets cut off on the right.
+- Write page: the chapter text is now one paper-like page that grows as you write and scrolls with the page, with no box or blue focus outline around it (an old global focus style was overriding the editor). Click anywhere below the text to keep writing at the end. While you type at the end of a long chapter, the line you are writing stays well above the bottom of the window.
+- Write page size: font size and line length follow the window width (about 30 characters per line in a narrow window, up to about 45 on a large screen, 17–22px text, line height 1.9), so a maximized window no longer shows a thin strip with empty space on both sides. "Font & paper" has a new default "自动（随窗口）" for size and width; your own choices still apply, and the old defaults are read as "auto".
+- Large screens: the exe window now scales the whole interface to the screen (1.0 on 1920×1080, about 1.2 on 2560×1440, up to 1.5), recalculated when the window moves to another monitor. Ctrl+mouse wheel or Ctrl+plus/minus still zooms, and Qianzhang remembers your own zoom.
+- Windows between 761 and 1100px wide: the sidebar becomes a narrow icon bar so the chapter list and text have more room; chapter titles and word counts stay readable.
+- Write page toolbar: "标为已发布" and "检查" have different icons, every button has a tooltip, labels are shown whenever they fit, and the save status (已保存 / 未保存 / 有冲突) is shown next to the word count.
 
 ### 中文
 
@@ -21,6 +26,11 @@
 - 英文界面：你自己写的章节标题、细纲、书名和设定简介不再被半翻译；修正章序、伏笔到期、字数里程碑、「快到期 / 已逾期」标签和删除作品按钮里的中英混杂；菜单里的长英文项自动换行，快捷键不再被挤出菜单。
 - 标签、「当前作品」、侧栏口号等小字至少 12px，中文更好认。
 - 窄窗口下稿纸右边不再被裁掉一截。
+- 写作页：正文变成一整张随内容长高的稿纸，跟着页面一起滚动，四周不再有框，也不再有聚焦时的蓝色描边（原因是一条全局的聚焦样式盖过了正文的设置）。点正文下面的空白处就能接着在末尾写。长章节在末尾打字时，正在写的那一行会留在窗口下方三成以上，不会贴着底边。
+- 写作页大小：字号和每行字数跟着窗口宽度变（窄窗口每行约 30 字，大屏约 45 字，字号 17–22px，行距 1.9），最大化后不再是中间一窄条、两边空空的。「字体与纸张」里字号和版心宽度新增默认的「自动（随窗口）」，自己选过的字号照旧生效，旧版默认值会按「自动」处理。
+- 大屏：exe 窗口会按屏幕大小整体放大界面（1920×1080 不放大，2560×1440 约 1.2 倍，最多 1.5 倍），窗口拖到别的显示器时重新计算。Ctrl+滚轮或 Ctrl+加减号仍可手动缩放，千章会记住你自己调的比例。
+- 窗口宽度在 761–1100px 之间时，左侧栏收成一条图标栏，给目录和正文腾出地方；章节标题和字数不会被挤没。
+- 写作页顶栏：「标为已发布」和「检查」换成不同的图标，每个按钮都有悬停提示，放得下时显示文字；字数旁边显示保存状态（已保存 / 未保存 / 有冲突）。
 
 ## [1.1.0] - 2026-10-31
 
