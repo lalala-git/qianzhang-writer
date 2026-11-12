@@ -1,6 +1,6 @@
 {
   "name": "qianzhang-writer",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "description": "Qianzhang (千章) — a local novel writing workspace",
   "scripts": {

@@ -2,7 +2,7 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/)。
 
-## [未发布 / Unreleased]
+## [1.2.0] - 2026-11-12
 
 ### English
 

@@ -6,7 +6,7 @@ const http = require('node:http');
 const https = require('node:https');
 const { execFile } = require('node:child_process');
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const API = 'https://api.github.com/repos/lalala-git/qianzhang-writer/releases/latest';
 const RELEASES = 'https://github.com/lalala-git/qianzhang-writer/releases';
 const RELEASE_URL = /^https:\/\/github\.com\/lalala-git\/qianzhang-writer\/releases(\/[A-Za-z0-9._\/-]*)?$/;
