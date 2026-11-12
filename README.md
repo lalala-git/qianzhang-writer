@@ -56,7 +56,7 @@ Additional contributor: **[Codex (OpenAI)](https://github.com/codex)** — docum
 - **Opening and pacing.** A self-check of your first three chapters, and a chart of chapter lengths across the whole book. Read-only: nothing in your work is touched.
 - **Ready to publish.** Pick a platform preset, run the pre-publish check, then copy a chapter or export it as txt. Chapters you mark as published leave your stock count.
 - **Your work stays safe.** It is saved on your computer with rolling automatic backups. A deleted work goes to a trash you can restore from in Settings, and you can export a backup file or restore from one.
-- **Small helpers for long sessions.** Ctrl+K jumps to any chapter, setting or page. A dark-room focus mode (Ctrl+Shift+F) hides the rest. When a chapter will not come, there is a corner for tearing up a bad draft or popping bubble wrap.
+- **Small helpers for long sessions.** Ctrl+K jumps to any chapter, setting or page. Ctrl+\ hides the sidebar and chapter list for a wider page, and a dark-room focus mode (Ctrl+Shift+F) hides the rest. When a chapter will not come, there is a corner for tearing up a bad draft or popping bubble wrap.
 - **Its own window (Windows).** The portable app opens a Qianzhang window; the taskbar and tray icons belong to Qianzhang. Closing the window, or choosing "退出千章" (Quit) from the tray, saves unsaved writing and quits. Opening it again while it is already running brings that window forward. If the WebView2 Runtime is missing, a notice explains how to install it from Microsoft and Qianzhang opens in a browser window for this session; then use the tray or the "Quit Qianzhang" button in the sidebar to save and quit.
 - **Chinese or English.** Chinese by default; switch in 设置 (Settings) → 界面语言 · Language. The screenshots here show the English interface.
 - **Optional AI.** Connect a service of your own for an AI editor, writer's-block help, continue/polish, a co-writer and character chat. Nothing is sent until you connect one; what is sent and how the key is stored is explained below.
@@ -199,7 +199,7 @@ To report a problem, [open an issue](https://github.com/lalala-git/qianzhang-wri
 - **开篇和节奏。** 前三章的自查，以及全书各章篇幅的对比图。只读，不会改动你的作品。
 - **发布前准备好。** 选一个平台预设，做一遍发布前自查，再复制单章或导出 txt。标成已发布的章节会从存稿里扣掉。
 - **稿子不会丢。** 作品保存在你的电脑上，并有滚动的自动备份。删掉的作品先进回收站，可以在设置里恢复；也能导出备份文件，或从备份恢复。
-- **长时间写作的小帮手。** Ctrl+K 跳到任意章节、设定或页面；小黑屋专注模式（Ctrl+Shift+F）把其他东西都藏起来；卡文的时候，还有个角落可以撕烂废稿，或者捏捏泡泡纸。
+- **长时间写作的小帮手。** Ctrl+K 跳到任意章节、设定或页面；Ctrl+\ 收起侧边栏和目录，让正文铺开；小黑屋专注模式（Ctrl+Shift+F）把其他东西都藏起来；卡文的时候，还有个角落可以撕烂废稿，或者捏捏泡泡纸。
 - **自己的窗口（Windows）。** 便携版用千章自己的窗口打开，任务栏和托盘图标也是千章的。关窗口或在托盘里选「退出千章」，会先把还没保存的内容存好再退出。已经打开时再双击，会把现有窗口调到前面。缺少 WebView2 运行时，会说明怎么从微软官网安装，这次先用浏览器窗口打开；这种情况下请用托盘或侧栏里的「退出千章」保存并退出。
 - **中文或 English。** 中文默认，在 设置 → 界面语言 · Language 切换；本说明里的截图是英文界面。
 - **可选的 AI。** 连接你自己的服务，就有 AI 责编、卡文助手、续写润色、陪写和角色聊天。没连接之前不会发送任何内容；会发送什么、密钥怎么存，见下方说明。

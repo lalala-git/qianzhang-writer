@@ -5,6 +5,20 @@
   const Pages = root.QZPages = root.QZPages || {};
   const words = t => root.QZStore.countWords(t);
   const PANEL = 'qianzhang:write-panel', OUTLINE = 'qianzhang:write-outline';
+  /** 收起侧边栏：写作页把左侧导航和目录一起收走，只留正文（Ctrl+\）。记在本机，下次打开还是收起的。只在有正文的写作页生效，别的页面导航始终都在。 */
+  const SIDE = 'qianzhang:write-side';
+  try { if (localStorage.getItem(SIDE) === 'off') document.documentElement.classList.add('side-collapsed'); } catch (e) {}
+  function sideToggle(force) {
+    const h = document.documentElement, off = typeof force === 'boolean' ? force : !h.classList.contains('side-collapsed');
+    const a = document.activeElement, fromSide = !!(a && a.closest && a.closest('.sidebar,.chapter-list'));
+    clearTimeout(sideToggle.t); h.classList.add('side-anim'); sideToggle.t = setTimeout(() => h.classList.remove('side-anim'), 340); /* 只在点按钮/快捷键时有过渡，打开程序时直接是记住的样子 */
+    h.classList.toggle('side-collapsed', off);
+    try { localStorage.setItem(SIDE, off ? 'off' : 'on'); } catch (e) {}
+    /* 焦点别落进被收走的地方：从目录里收起就移到「展开」按钮，从「展开」按钮展开就回到「收起」按钮 */
+    const to = off && fromSide ? document.querySelector('.editor-bar .side-open') : !off && a && a.classList && a.classList.contains('side-open') ? document.querySelector('.chapter-list .side-close') : null;
+    if (to) try { to.focus({ preventScroll:true }); } catch (e) {}
+    return off;
+  }
 
   function current(app, params) {
     const list = app.project.chapters();
@@ -258,7 +272,7 @@
     label:'写作', icon:'pen',
     render: function (app, params) {
       const p = app.project, list = p.chapters(), c = current(app, params);
-      const side = '<aside class="chapter-list"><div class="side-head"><h2>目录</h2><button class="icon-btn" data-act="write.add" title="新建章节">' + icon('plus') + '</button></div>'
+      const side = '<aside class="chapter-list"><div class="side-head"><h2>目录</h2><span class="side-tools">' + (c ? '<button class="icon-btn side-close" data-act="write.sidebar" title="收起侧边栏（Ctrl+\\）" aria-label="收起侧边栏" aria-expanded="true">' + icon('sidebarClose') + '</button>' : '') + '<button class="icon-btn" data-act="write.add" title="新建章节">' + icon('plus') + '</button></span></div>'
         + (list.length || p.data.volumes.length ? chapterList(app, c) : '<p class="muted pad">还没有章节</p>')
         + '<button class="btn ghost block" data-act="write.import">' + icon('upload') + '导入 txt / md</button><a class="btn ghost block ob-hide" href="#/plan">' + icon('map') + '分卷与伏笔</a></aside>';
       if (!c) return '<div class="write-layout">' + side + '<section class="empty-state"><span class="empty-icon">' + icon('book') + '</span><h2>开始你的第一章</h2><p>写作区会自动保存并记录今日字数。也可以导入已有的稿子，按「第X章」自动拆分。</p><div class="row center"><button class="btn primary lg" data-act="write.add">' + icon('plus') + '新建章节</button><button class="btn lg" data-act="write.import">' + icon('upload') + '导入稿件</button></div></section></div>';
@@ -266,7 +280,7 @@
       const s = root.QZCraft.streak(p.data.writing.daily, p.data.writing.goal);
       const vols = p.volumes();
       return '<div class="write-layout' + (panel ? ' with-panel' : '') + '">' + side + '<section class="editor">'
-        + '<div class="editor-bar"><span class="muted ch-pos">第 ' + (idx + 1) + ' / ' + list.length + ' 章</span>'
+        + '<div class="editor-bar"><button class="icon-btn side-open" data-act="write.sidebar" title="展开侧边栏（Ctrl+\\）" aria-label="展开侧边栏" aria-expanded="false">' + icon('sidebarOpen') + '</button><span class="muted ch-pos">第 ' + (idx + 1) + ' / ' + list.length + ' 章</span>'
         + (vols.length ? '<select class="select sm" id="ch-vol" title="所属分卷"><option value="">未分卷</option>' + vols.map(v => '<option value="' + esc(v.id) + '"' + (c.volumeId === v.id ? ' selected' : '') + '>' + esc(v.title) + '</option>').join('') + '</select>' : '')
         + '<span class="grow"></span>'
         + '<button class="pill cp-badge" id="cp-badge" data-act="write.companionOff"' + (cp.on ? '' : ' hidden') + '><i></i>陪写开 · 关闭</button>'
@@ -291,7 +305,7 @@
         + '<textarea class="chapter-text" id="ch-text" placeholder="' + (Pages.onboard && Pages.onboard.minimal(app) ? Pages.onboard.FIRST_LINE : '从这里开始写……') + '" data-id="' + esc(c.id) + '">' + esc(c.text) + '</textarea><div class="cp-feed" id="cp-feed" aria-live="polite"' + (cp.on ? '' : ' hidden') + '></div></div></section>'
         + (panel ? '<aside class="check-panel"><div id="nn-slot"></div><div id="check-panel">' + checkHtml(app, c) + '</div></aside>' : '') + '</div>';
     },
-    checkHtml, ritual, riteCanvas, prefs, setPrefs,
+    checkHtml, ritual, riteCanvas, prefs, setPrefs, sideToggle,
     /** 断点续写：记下每本书最后停在哪章哪个字。 */
     resumeInfo: function (app) {
       let r = null; try { r = JSON.parse(localStorage.getItem('qianzhang:caret:' + app.project.id)); } catch (e) {}
@@ -357,6 +371,7 @@
       const k = e.key, mod = e.ctrlKey || e.metaKey;
       if (k === 'Escape' && reader.on) { stopRead(); return true; }
       if (k === 'Escape' && app.focus) { exitFocus(app); return true; }
+      if (mod && !e.shiftKey && !e.altKey && (k === '\\' || e.code === 'Backslash')) { if (!app.focus) sideToggle(); return true; } /* Ctrl+\ 收起/展开侧边栏（小黑屋里本来就全藏着） */
       if (mod && e.shiftKey && k.toLowerCase() === 'f') { app.focus ? exitFocus(app) : Pages.write.actions.focus(app); return true; }
       if (e.altKey && (k === 'ArrowUp' || k === 'ArrowDown')) {
         const list = app.project.chapters(), c = current(app, app.route.params), i = list.indexOf(c) + (k === 'ArrowUp' ? -1 : 1);
@@ -372,6 +387,7 @@
       return false;
     },
     actions: {
+      sidebar: () => sideToggle(),
       nnAdd: app => { const el = document.querySelector('.nn-card'); if (!el) return; const name = el.dataset.name, type = (el.querySelector('#nn-type') || {}).value || 'PERSON';
         const c = current(app, app.route.params); app.project.addEntity({ name, type, summary:c ? '第 ' + app.project.chapterNo(c.id) + ' 章初次出场' : '' }); el.remove();
         const panel = document.getElementById('check-panel'); if (panel && c) panel.innerHTML = checkHtml(app, app.project.chapter(c.id));

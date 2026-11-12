@@ -1082,3 +1082,20 @@ textarea.chapter-text:focus,textarea.chapter-text:focus-visible,input.chapter-ti
   .update-open{font-size:12px;padding:6px 4px;text-align:center}.update-x{display:none}
   .sidebar .btn.quit-btn{font-size:0;gap:0;padding:0}.sidebar .btn.quit-btn svg{width:18px;height:18px}
 }
+/* 收起侧边栏（写作页，Ctrl+\）：左侧导航和目录一起滑出去，正文铺开、重新居中，字号和每行字数按新宽度重算。
+   只在有正文的写作页生效：去别的页面时导航照常显示，不会被困住。 */
+:root{--toc-w:270px}
+@media(max-width:1000px){:root{--toc-w:220px}}
+@media(min-width:761px){.page-write .write-layout>.chapter-list{width:var(--toc-w)}}
+#app .sidebar{--side-w:var(--side)}.page-write .write-layout>.chapter-list{--side-w:var(--toc-w)}
+.side-tools{display:flex;align-items:center;gap:2px}
+.side-head .side-close,.editor-bar .side-open{color:var(--muted)}
+.side-head .side-close:hover,.editor-bar .side-open:hover{color:var(--text)}
+.side-close svg,.side-open svg{width:18px;height:18px}
+.editor-bar .side-open{display:none;flex:none;width:32px;height:32px;margin:0 -2px 0 -12px}
+html.side-collapsed .page-write .editor-bar .side-open{display:inline-grid}
+html.side-anim.side-collapsed .page-write .editor-bar .side-open{animation:fade .28s ease-out}
+html.side-collapsed #app:has(.page-write .editor) .sidebar,html.side-collapsed .page-write .write-layout:has(>.editor)>.chapter-list{margin-left:calc(-1 * var(--side-w));opacity:0;visibility:hidden;pointer-events:none}
+html.side-anim #app .sidebar,html.side-anim .page-write .write-layout>.chapter-list{transition:margin-left .24s var(--ease),opacity .2s ease,visibility 0s}
+html.side-anim.side-collapsed #app .sidebar,html.side-anim.side-collapsed .page-write .write-layout>.chapter-list{transition:margin-left .24s var(--ease),opacity .16s ease,visibility 0s linear .24s}
+@media(max-width:760px){html.side-collapsed #app:has(.page-write .editor) .sidebar,html.side-collapsed .page-write .write-layout:has(>.editor)>.chapter-list{display:none}}

@@ -17,6 +17,7 @@
 - Large screens: the exe window now scales the whole interface to the screen (1.0 on 1920×1080, about 1.2 on 2560×1440, up to 1.5), recalculated when the window moves to another monitor. Ctrl+mouse wheel or Ctrl+plus/minus still zooms, and Qianzhang remembers your own zoom.
 - Windows between 761 and 1100px wide: the sidebar becomes a narrow icon bar so the chapter list and text have more room; chapter titles and word counts stay readable.
 - Write page toolbar: "标为已发布" and "检查" have different icons, every button has a tooltip, labels are shown whenever they fit, and the save status (已保存 / 未保存 / 有冲突) is shown next to the word count.
+- Write page: a new "hide sidebar" button next to "+" in the 目录 header (or Ctrl+\) slides away both the left navigation and the chapter list, so the page re-centers and the text size and line length follow the wider window. A small button at the top-left of the toolbar (before the chapter counter) or Ctrl+\ again brings them back. Qianzhang remembers the choice after a restart. It only applies to the write page; other pages always show the navigation. Also in the command palette (Ctrl+K).
 
 ### 中文
 
@@ -31,6 +32,7 @@
 - 大屏：exe 窗口会按屏幕大小整体放大界面（1920×1080 不放大，2560×1440 约 1.2 倍，最多 1.5 倍），窗口拖到别的显示器时重新计算。Ctrl+滚轮或 Ctrl+加减号仍可手动缩放，千章会记住你自己调的比例。
 - 窗口宽度在 761–1100px 之间时，左侧栏收成一条图标栏，给目录和正文腾出地方；章节标题和字数不会被挤没。
 - 写作页顶栏：「标为已发布」和「检查」换成不同的图标，每个按钮都有悬停提示，放得下时显示文字；字数旁边显示保存状态（已保存 / 未保存 / 有冲突）。
+- 写作页可以收起侧边栏：「目录」标题右边、「+」左边新增收起按钮（或按 Ctrl+\），左侧导航和目录一起滑走，正文重新居中，字号和每行字数按变宽后的窗口重新计算。顶栏最左边（章序前面）的小按钮或再按一次 Ctrl+\ 就能展开。收起状态会记住，重开千章还是一样。只在写作页生效，去别的页面导航照常显示。命令面板（Ctrl+K）里也能找到。
 
 ## [1.1.0] - 2026-10-31
 

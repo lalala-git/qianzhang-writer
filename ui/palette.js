@@ -3,7 +3,7 @@
   'use strict';
   const UI = root.QZUI, esc = s => UI.esc(s);
   const PAGES = [['write', '写作'], ['plan', '大纲与伏笔'], ['library', '设定库与关系图'], ['notes', '素材墙'], ['insight', '分析'], ['publish', '发布'], ['home', '概览'], ['chat', '角色聊天'], ['settings', '设置与备份']];
-  const ACTS = [['add', '新建章节', 'Alt+N'], ['prepub', '发布前 30 秒自查', 'Alt+P'], ['companion', '开关 AI 陪写', 'Alt+C'], ['focus', '小黑屋专注模式', 'Ctrl+Shift+F'], ['panel', '本章体检', 'Ctrl+.'], ['search', '全书查找替换', 'Ctrl+Shift+H'], ['notes', '本章素材', 'Alt+M'], ['rules', '设定规则', ''], ['history', '本章历史版本', ''], ['branches', '情节分支', ''], ['aiCheck', 'AI 看看这一章', ''], ['outline', '本章细纲', ''], ['read', '朗读本章', ''], ['export', '导出本章', ''], ['exportAll', '导出全书', '']];
+  const ACTS = [['add', '新建章节', 'Alt+N'], ['prepub', '发布前 30 秒自查', 'Alt+P'], ['companion', '开关 AI 陪写', 'Alt+C'], ['focus', '小黑屋专注模式', 'Ctrl+Shift+F'], ['sidebar', '收起 / 展开侧边栏', 'Ctrl+\\'], ['panel', '本章体检', 'Ctrl+.'], ['search', '全书查找替换', 'Ctrl+Shift+H'], ['notes', '本章素材', 'Alt+M'], ['rules', '设定规则', ''], ['history', '本章历史版本', ''], ['branches', '情节分支', ''], ['aiCheck', 'AI 看看这一章', ''], ['outline', '本章细纲', ''], ['read', '朗读本章', ''], ['export', '导出本章', ''], ['exportAll', '导出全书', '']];
   const RECENT = 'qianzhang:palette-recent';
 
   /** 简单模糊匹配：按顺序包含全部字符；连续/开头命中分更高。返回 -1 表示不匹配。 */
