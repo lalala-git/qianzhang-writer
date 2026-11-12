@@ -454,9 +454,9 @@ b.add, b.del { padding:0 4px; border-radius:4px; text-decoration:none; }
 [data-act="write.read"].on svg { animation:cg-pulse 1.2s ease-in-out infinite; }
 @keyframes cg-pulse { 50% { opacity:.4; } }
 @media (prefers-reduced-motion:reduce) { [data-act="write.read"].on svg, .ob-bar i { animation:none; transition:none; } }
-/* 编辑栏按钮多了以后，中等宽度只显示图标（悬停看提示） */
-@media (max-width:1700px) { .write-layout.with-panel .editor-bar .btn.ghost.sm { font-size:0; gap:0; padding:0 9px; } .write-layout.with-panel .editor-bar .btn.ghost.sm svg { width:17px; height:17px; } }
-@media (max-width:1280px) { .editor-bar .btn.ghost.sm { font-size:0; gap:0; padding:0 9px; } .editor-bar .btn.ghost.sm svg { width:17px; height:17px; } .editor-bar .goal-pill { white-space:nowrap; } }
+/* 编辑栏放不下时（由 page-write.js 按实际宽度判断）只显示图标（悬停看提示），再放不下就藏起章序和今日目标 */
+.editor-bar.compact .btn.ghost.sm { font-size:0; gap:0; padding:0 9px; } .editor-bar.compact .btn.ghost.sm svg { width:17px; height:17px; } .editor-bar .goal-pill { white-space:nowrap; }
+.editor-bar.tight > .ch-pos, .editor-bar.tight .goal-pill { display:none; } .editor-bar.bar-wrap { flex-wrap:wrap; row-gap:6px; }
 .chapter-title.long { font-size:clamp(18px, 2.2vw, 24px); text-overflow:ellipsis; }
 
 /* ---------- 书名简介、读者评论 ---------- */
@@ -1021,3 +1021,9 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px soli
 .quit-btn.attn{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 35%,var(--border))}
 .quit-done{max-width:520px;margin:18vh auto;padding:28px 32px;text-align:center;font-family:system-ui,sans-serif}
 .quit-done h1{font-size:24px;margin:0 0 10px}
+/* 可读性下限：界面里的中文小字不小于 12px（数字角标、坐标轴、快捷键另算） */
+.ps-label,.tag,.brand small,.ring-text small,.hover-card em,.bp-item small,.gr-alerts em,.gr-now small,.pal-item em,.cp-note small,.hit em,#check-panel .check-core small,.cs-row.lost .cs-name::after,.mp-head .muted{font-size:12px}
+/* 英文界面：菜单项文字更长，允许换行，快捷键不被挤出菜单 */
+html[lang=en] .menu-pop { max-width:min(420px, 92vw); } html[lang=en] .menu-pop button { white-space:normal; } .menu-pop kbd { flex:none; }
+/* 窄窗口：纸张有左右外边距时不再写死 100% 宽，免得右边被裁掉一截 */
+@media (max-width:1000px) { .paper { width:auto; } }

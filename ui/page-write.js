@@ -236,9 +236,22 @@
 
   function chapterList(app, c) {
     const p = app.project, groups = p.outline(), all = p.chapters();
-    const item = x => '<a class="chapter-item' + (c && x.id === c.id ? ' on' : '') + '" href="#/write/' + encodeURIComponent(x.id) + '"><span class="ch-no">' + (all.indexOf(x) + 1) + '</span><span class="ch-title">' + esc(x.title) + '</span><span class="ch-words">' + words(x.text).toLocaleString() + '</span></a>';
+    const item = x => '<a class="chapter-item' + (c && x.id === c.id ? ' on' : '') + '" href="#/write/' + encodeURIComponent(x.id) + '"><span class="ch-no">' + (all.indexOf(x) + 1) + '</span><span class="ch-title" data-no-i18n>' + esc(x.title) + '</span><span class="ch-words">' + words(x.text).toLocaleString() + '</span></a>';
     return groups.map(g => (g.volume ? '<div class="vol-head"><span>' + esc(g.volume.title) + '</span><button class="icon-btn sm" data-act="write.add" data-vol="' + esc(g.volume.id) + '" title="在本卷新建章节">' + icon('plus') + '</button></div>' : '')
       + g.chapters.map(item).join('')).join('');
+  }
+
+  /** 写作页顶栏：放不下时先收起按钮文字（只留图标），还放不下再藏起章序和今日目标，最后才折成两行（不藏功能按钮）。按实际宽度判断，中英文、开不开检查面板都适用。 */
+  function fitBar(bar) {
+    if (!bar || !root.ResizeObserver) return;
+    let raf = 0;
+    const fit = () => { if (!bar.isConnected) { ro.disconnect(); mo.disconnect(); return; }
+      bar.classList.remove('compact', 'tight', 'bar-wrap');
+      if (bar.scrollWidth > bar.clientWidth + 1) { bar.classList.add('compact'); if (bar.scrollWidth > bar.clientWidth + 1) bar.classList.add('tight'); if (bar.scrollWidth > bar.clientWidth + 1) bar.classList.add('bar-wrap'); } };
+    const later = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(fit); };
+    const ro = new ResizeObserver(later), mo = new MutationObserver(later);
+    ro.observe(bar); mo.observe(bar, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden'] });
+    fit();
   }
 
   Pages.write = {
@@ -253,7 +266,7 @@
       const s = root.QZCraft.streak(p.data.writing.daily, p.data.writing.goal);
       const vols = p.volumes();
       return '<div class="write-layout' + (panel ? ' with-panel' : '') + '">' + side + '<section class="editor">'
-        + '<div class="editor-bar"><span class="muted">第 ' + (idx + 1) + ' / ' + list.length + ' 章</span>'
+        + '<div class="editor-bar"><span class="muted ch-pos">第 ' + (idx + 1) + ' / ' + list.length + ' 章</span>'
         + (vols.length ? '<select class="select sm" id="ch-vol" title="所属分卷"><option value="">未分卷</option>' + vols.map(v => '<option value="' + esc(v.id) + '"' + (c.volumeId === v.id ? ' selected' : '') + '>' + esc(v.title) + '</option>').join('') + '</select>' : '')
         + '<span class="grow"></span>'
         + '<button class="pill cp-badge" id="cp-badge" data-act="write.companionOff"' + (cp.on ? '' : ' hidden') + '><i></i>陪写开 · 关闭</button>'
@@ -273,7 +286,7 @@
         + '<button data-act="write.up"' + (idx === 0 ? ' disabled' : '') + '>' + icon('arrowUp') + '上移</button><button data-act="write.down"' + (idx === list.length - 1 ? ' disabled' : '') + '>' + icon('arrowDown') + '下移</button>'
         + '<button data-act="write.copy">' + icon('upload') + '复制本章（平台排版）</button><button data-act="write.publishExport">' + icon('download') + '按平台格式导出…</button><hr><button class="danger" data-act="write.remove">' + icon('trash') + '删除本章</button></div></details></div>'
         + (app.focus ? '<div class="focus-hud" id="focus-hud"></div>' : '')
-        + '<div class="paper">' + (showOutline ? '<details class="outline-box"' + (localStorage.getItem(OUTLINE) === 'on' || !String(c.outline || '').trim() && localStorage.getItem(OUTLINE) !== 'off' ? ' open' : '') + '><summary>' + icon('list') + '<b>本章细纲</b><span class="ob-peek">' + esc(String(c.outline || '').split('\n').filter(l => l.trim() && !/^[^：]{2,6}：\s*$/.test(l))[0] || '点开写这一章要发生什么') + '</span></summary><div class="ob-head"><label>本章细纲</label><input id="ch-time" class="st-input" placeholder="书中时间，如：第三天夜 / 民国二十三年秋" value="' + esc(c.storyTime || '') + '"></div><textarea id="ch-outline" rows="' + Math.min(8, Math.max(3, String(c.outline || '').split('\n').length)) + '" placeholder="这一章要发生什么？冲突、爽点、章末钩子……">' + esc(c.outline || '') + '</textarea></details>' : '') + (Pages.onboard ? Pages.onboard.banner(app, c) : '')
+        + '<div class="paper">' + (showOutline ? '<details class="outline-box"' + (localStorage.getItem(OUTLINE) === 'on' || !String(c.outline || '').trim() && localStorage.getItem(OUTLINE) !== 'off' ? ' open' : '') + '><summary>' + icon('list') + '<b>本章细纲</b><span class="ob-peek" data-no-i18n>' + esc(String(c.outline || '').split('\n').filter(l => l.trim() && !/^[^：]{2,6}：\s*$/.test(l))[0] || '点开写这一章要发生什么') + '</span></summary><div class="ob-head"><label>本章细纲</label><input id="ch-time" class="st-input" placeholder="书中时间，如：第三天夜 / 民国二十三年秋" value="' + esc(c.storyTime || '') + '"></div><textarea id="ch-outline" rows="' + Math.min(8, Math.max(3, String(c.outline || '').split('\n').length)) + '" placeholder="这一章要发生什么？冲突、爽点、章末钩子……">' + esc(c.outline || '') + '</textarea></details>' : '') + (Pages.onboard ? Pages.onboard.banner(app, c) : '')
         + '<input class="chapter-title' + (Array.from(c.title).length > 14 ? ' long' : '') + '" id="ch-title" value="' + esc(c.title) + '" placeholder="章节标题" data-id="' + esc(c.id) + '">'
         + '<textarea class="chapter-text" id="ch-text" placeholder="' + (Pages.onboard && Pages.onboard.minimal(app) ? Pages.onboard.FIRST_LINE : '从这里开始写……') + '" data-id="' + esc(c.id) + '">' + esc(c.text) + '</textarea><div class="cp-feed" id="cp-feed" aria-live="polite"' + (cp.on ? '' : ' hidden') + '></div></div></section>'
         + (panel ? '<aside class="check-panel"><div id="nn-slot"></div><div id="check-panel">' + checkHtml(app, c) + '</div></aside>' : '') + '</div>';
@@ -291,6 +304,7 @@
     mount: function (app, params) {
       if (reader.on) stopRead();
       applyPaper();
+      fitBar(document.querySelector('.editor-bar'));
       const t = document.getElementById('ch-text'), title = document.getElementById('ch-title'); if (!t) return;
       mention(app, t);
       const id = t.dataset.id, grow = () => { t.style.height = 'auto'; t.style.height = Math.max(t.scrollHeight, 420) + 'px'; };
