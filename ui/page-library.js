@@ -37,7 +37,7 @@
       const rels = app.project.relationsOf(n.id).length;
       return '<button class="entity-card" data-act="library.open" data-id="' + esc(n.id) + '">' + UI.avatar(n.name, n.type === 'PERSON' ? '' : 'sq')
         + '<span class="ec-body"><span class="ec-head"><b>' + esc(n.name) + '</b><span class="tag t-' + esc(n.type) + '">' + esc(typeLabel(n.type)) + '</span></span>'
-        + '<span class="ec-sum">' + (esc(n.summary) || '<i class="muted">暂无简介</i>') + '</span>'
+        + '<span class="ec-sum">' + (n.summary ? '<span data-no-i18n>' + esc(n.summary) + '</span>' : '') + (n.summary ? '' : '<i class="muted">暂无简介</i>') + '</span>'
         + (rels ? '<span class="ec-meta">' + icon('link') + rels + ' 条关系</span>' : '') + '</span></button>';
     }).join('') + '</div>';
   }

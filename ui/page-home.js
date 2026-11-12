@@ -11,7 +11,7 @@
     const ring = '<svg class="ring" viewBox="0 0 80 80"><circle cx="40" cy="40" r="' + R + '" class="ring-bg"/><circle cx="40" cy="40" r="' + R + '" class="ring-fg" stroke-dasharray="' + (L * pct).toFixed(1) + ' ' + L.toFixed(1) + '"/></svg>';
     const hs = app.heatSpan || 18, cells = C.heatmap(w.daily, w.goal, hs).map(col => '<div class="hm-col">' + col.map(c => '<i class="hm l' + c.level + (c.future ? ' fut' : '') + '" title="' + c.key + '：' + c.words.toLocaleString() + ' 字" data-tip="' + c.key.slice(5) + ' · ' + c.words.toLocaleString() + ' 字"></i>').join('') + '</div>').join('');
     const due = p.foreshadows().map(f => ({ f, st:C.foreshadowStatus(f, n) })).filter(x => x.st === 'overdue' || x.st === 'soon');
-    const remind = due.length ? '<div class="remind"><h3>' + icon('flag') + '伏笔提醒</h3>' + due.slice(0, 4).map(x => '<a href="#/plan" class="remind-item ' + x.st + '"><span class="tag ' + x.st + '">' + C.STATUS_LABEL[x.st] + '</span>' + esc(x.f.title) + '<small>计划第 ' + x.f.dueChapter + ' 章回收 · 现写到第 ' + n + ' 章</small></a>').join('') + (due.length > 4 ? '<a class="muted small" href="#/plan">还有 ' + (due.length - 4) + ' 个…</a>' : '') + '</div>' : '';
+    const remind = due.length ? '<div class="remind"><h3>' + icon('flag') + '伏笔提醒</h3>' + due.slice(0, 4).map(x => '<a href="#/plan" class="remind-item ' + x.st + '"><span class="tag ' + x.st + '">' + C.STATUS_LABEL[x.st] + '</span><span data-no-i18n>' + esc(x.f.title) + '</span><small>计划第 ' + x.f.dueChapter + ' 章回收 · 现写到第 ' + n + ' 章</small></a>').join('') + (due.length > 4 ? '<a class="muted small" href="#/plan">还有 ' + (due.length - 4) + ' 个…</a>' : '') + '</div>' : '';
     return '<section class="dash"><div class="goal-card"><div class="ring-wrap">' + ring + '<div class="ring-text"><b>' + Math.round(pct * 100) + '%</b><small>今日</small></div></div>'
       + '<div class="goal-info"><p class="muted small">今日码字</p><p class="big"><b>' + s.today.toLocaleString() + '</b> / <button class="link" data-act="home.goal" title="修改每日目标">' + s.goal.toLocaleString() + '</button></p>'
       + '<p class="streak">' + icon('fire') + (s.current ? '已连更 <b>' + s.current + '</b> 天' : '今天开始连更') + '</p><p class="muted small">最长连更 ' + s.best + ' 天</p>'
@@ -101,9 +101,9 @@
       const card = (page, ic, title, desc, meta, cta) => '<a class="entry-card" href="#/' + page + '"><span class="entry-icon">' + icon(ic) + '</span>'
         + '<h3>' + title + '</h3><p>' + desc + '</p><div class="entry-meta">' + meta + '</div><span class="entry-cta">' + cta + ' →</span></a>';
       if (app._implicit && app.draftOnly()) return '<section class="hero empty-shelf"><div><p class="eyebrow">' + hello + '，作者</p><h1>书架还是空的</h1><p class="hero-stats">新建一本作品就能开始写。写下第一章之前，这里不会保存任何文件。</p></div><div class="hero-actions"><button class="btn primary lg" data-act="home.create">' + icon('plus') + '新建作品</button></div></section>';
-      return '<section class="hero"><div><p class="eyebrow">' + hello + '，作者</p><h1>' + esc(p.title) + '</h1>'
+      return '<section class="hero"><div><p class="eyebrow">' + hello + '，作者</p><h1 data-no-i18n>' + esc(p.title) + '</h1>'
         + '<p class="hero-stats"><b>' + s.words.toLocaleString() + '</b> 字 · <b>' + s.chapters + '</b> 章 · <b>' + s.entities + '</b> 条设定 · <b>' + s.relations + '</b> 条关系</p></div>'
-        + '<div class="hero-actions">' + (last ? '<a class="btn primary lg" href="#/write/' + encodeURIComponent(last.id) + '">' + icon('pen') + '<span class="hb-txt">继续写<small>' + esc(Array.from(last.title.replace(/\s+/g, ' ')).length > 14 ? Array.from(last.title.replace(/\s+/g, ' ')).slice(0, 14).join('') + '…' : last.title.replace(/\s+/g, ' ')) + '</small></span></a>' + resumeLine(app, last)
+        + '<div class="hero-actions">' + (last ? '<a class="btn primary lg" href="#/write/' + encodeURIComponent(last.id) + '">' + icon('pen') + '<span class="hb-txt">继续写<small data-no-i18n>' + esc(Array.from(last.title.replace(/\s+/g, ' ')).length > 14 ? Array.from(last.title.replace(/\s+/g, ' ')).slice(0, 14).join('') + '…' : last.title.replace(/\s+/g, ' ')) + '</small></span></a>' + resumeLine(app, last)
           : '<button class="btn primary lg" data-act="home.firstChapter">' + icon('pen') + '写第一章</button>')
         + '</div><button class="icon-btn hero-rename" data-act="home.rename" title="重命名作品" aria-label="重命名作品">' + icon('pen') + '</button><button class="icon-btn hero-del" data-act="home.del" title="删除作品（移进回收站）" aria-label="删除作品">' + icon('trash') + '</button></section>'
         + riteCard(app) + insCard(app) + onboard(app)
@@ -126,7 +126,7 @@
         list.forEach(x => { if (x.id === app.project.id) x.title = app.project.title; });
         if (!list.some(x => x.id === app.project.id)) list.unshift({ id:app.project.id, title:app.project.title, updated_at:app.project.data.meta.updated_at });
         host.innerHTML = list.map(x => '<button class="project-item' + (x.id === app.project.id ? ' on' : '') + '" data-act="home.open" data-id="' + esc(x.id) + '">'
-          + UI.avatar(x.title, 'sq') + '<span><b>' + esc(x.title) + '</b><small>' + (x.id === app.project.id ? '正在编辑' : (UI.relTime(x.updated_at) || esc(x.id))) + '</small></span></button>').join('');
+          + UI.avatar(x.title, 'sq') + '<span><b data-no-i18n>' + esc(x.title) + '</b><small>' + (x.id === app.project.id ? '正在编辑' : (UI.relTime(x.updated_at) || esc(x.id))) + '</small></span></button>').join('');
       });
     },
     switcher: (app) => switcher(app),
@@ -162,7 +162,7 @@
       const k = q.value.trim().toLowerCase(), shown = list.filter(x => !k || String(x.title).toLowerCase().includes(k));
       idx = Math.min(idx, Math.max(0, shown.length - 1));
       host.innerHTML = shown.length ? shown.map((x, i) => '<button class="bp-item' + (i === idx ? ' on' : '') + (x.id === app.project.id ? ' cur' : '') + '" data-i="' + i + '" role="option">' + UI.avatar(x.title, 'sq')
-        + '<span><b>' + esc(x.title) + '</b><small>' + (x.id === app.project.id ? '正在编辑' : [x.words != null ? x.words.toLocaleString() + ' 字' : '', UI.relTime(x.updated_at || x.updatedAt) || ''].filter(Boolean).join(' · ')) + '</small></span>' + (x.id === app.project.id ? icon('check') : '') + '<span class="bp-del" data-del="' + i + '" title="删除（移进回收站）" role="button" aria-label="删除">' + icon('trash') + '</span></button>').join('')
+        + '<span><b data-no-i18n>' + esc(x.title) + '</b><small>' + (x.id === app.project.id ? '正在编辑' : [x.words != null ? x.words.toLocaleString() + ' 字' : '', UI.relTime(x.updated_at || x.updatedAt) || ''].filter(Boolean).join(' · ')) + '</small></span>' + (x.id === app.project.id ? icon('check') : '') + '<span class="bp-del" data-del="' + i + '" title="删除（移进回收站）" role="button" aria-label="删除">' + icon('trash') + '</span></button>').join('')
         : '<p class="muted small bp-empty">没有叫这个名字的作品</p>';
       host._shown = shown; const on = host.querySelector('.on'); on && on.scrollIntoView({ block:'nearest' });
     };

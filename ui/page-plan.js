@@ -4,6 +4,7 @@
   const UI = root.QZUI, { esc, icon } = UI;
   const Pages = root.QZPages = root.QZPages || {};
   const C = () => root.QZCraft;
+  const en = () => !!(root.QZI18N && root.QZI18N.lang() === 'en');
 
   // 伏笔多、章节多时每个下拉都放几百个选项会拖慢页面：先只放选中项，聚焦时再填满
   function chapterOptions(p, value) { return p.chapters().map((c, i) => '<option value="' + esc(c.id) + '"' + (c.id === value ? ' selected' : '') + '>' + (i + 1) + '. ' + esc(c.title) + '</option>').join(''); }
@@ -25,7 +26,7 @@
     const add = (cid, html) => { if (cid) (by[cid] = by[cid] || []).push(html); };
     p.data.nodes.forEach(n => (n.progress || []).forEach(x => add(x.chapterId, '<span class="tl-ev' + (x.dead ? ' dead' : '') + '"><b>' + esc(n.name) + '</b>' + esc(x.text || (x.dead ? '' : '（变化）')) + (x.dead ? ' ✝' : '') + '</span>')));
     p.foreshadows().forEach(f => { add(f.plantedIn, '<span class="tl-ev fs">埋 · ' + esc(f.title) + '</span>'); add(f.resolvedIn, '<span class="tl-ev ok">收 · ' + esc(f.title) + '</span>'); });
-    const rows = all.map((c, i) => (by[c.id] || c.storyTime) ? '<a class="tl-row" href="#/write/' + encodeURIComponent(c.id) + '"><span class="ch-no">' + (i + 1) + '</span><span class="tl-time">' + esc(c.storyTime || '—') + '</span><span class="tl-title">' + esc(c.title) + '</span><span class="tl-evs">' + (by[c.id] || []).join('') + '</span></a>' : '').join('');
+    const rows = all.map((c, i) => (by[c.id] || c.storyTime) ? '<a class="tl-row" href="#/write/' + encodeURIComponent(c.id) + '"><span class="ch-no">' + (i + 1) + '</span><span class="tl-time">' + esc(c.storyTime || '—') + '</span><span class="tl-title" data-no-i18n>' + esc(c.title) + '</span><span class="tl-evs">' + (by[c.id] || []).join('') + '</span></a>' : '').join('');
     return '<section class="panel tl"><div class="panel-head"><div><h2>' + icon('list') + ' 时间线</h2><p class="muted small">只列出填了「书中时间」、记录了人物状态变化或埋/收伏笔的章节。书中时间在写作页细纲框里填，状态变化在设定详情里记。</p></div></div>'
       + (rows || '<div class="empty-mini">' + icon('list') + '<p>还没有可显示的事件。</p></div>') + '</section>';
   }
@@ -37,7 +38,7 @@
       const outline = p.outline().map(g => '<div class="vol"><div class="vol-title">' + (g.volume
           ? '<b>' + esc(g.volume.title) + '</b><span class="muted small">' + g.chapters.length + ' 章 · ' + g.chapters.reduce((s, c) => s + root.QZStore.countWords(c.text), 0).toLocaleString() + ' 字</span><span class="grow"></span><button class="icon-btn sm" data-act="plan.renameVol" data-id="' + esc(g.volume.id) + '" title="重命名">' + icon('pen') + '</button><button class="icon-btn sm" data-act="plan.removeVol" data-id="' + esc(g.volume.id) + '" title="删除分卷（章节保留）">' + icon('trash') + '</button>'
           : '<b>未分卷</b><span class="muted small">' + g.chapters.length + ' 章</span>') + '</div>'
-        + (g.chapters.length ? g.chapters.map(c => '<a class="ol-item" href="#/write/' + encodeURIComponent(c.id) + '"><span class="ch-no">' + (all.indexOf(c) + 1) + '</span><span class="grow"><b>' + esc(c.title) + '</b><span class="ol-note">' + (c.outline ? esc(c.outline) : '<i class="muted">还没写细纲</i>') + '</span></span><span class="ch-words">' + root.QZStore.countWords(c.text).toLocaleString() + '</span></a>').join('') : '<p class="muted small pad">本卷还没有章节，在写作页可把章节移入。</p>') + '</div>').join('');
+        + (g.chapters.length ? g.chapters.map(c => '<a class="ol-item" href="#/write/' + encodeURIComponent(c.id) + '"><span class="ch-no">' + (all.indexOf(c) + 1) + '</span><span class="grow"><b data-no-i18n>' + esc(c.title) + '</b><span class="ol-note">' + (c.outline ? '<span data-no-i18n>' + esc(c.outline) + '</span>' : '<i class="muted">还没写细纲</i>') + '</span></span><span class="ch-words">' + root.QZStore.countWords(c.text).toLocaleString() + '</span></a>').join('') : '<p class="muted small pad">本卷还没有章节，在写作页可把章节移入。</p>') + '</div>').join('');
       const items = p.foreshadows().map(f => ({ f, st:C().foreshadowStatus(f, n) }))
         .filter(x => filter === 'all' || (filter === 'done' ? x.st === 'resolved' : x.st !== 'resolved'))
         .sort((a, b) => ['overdue', 'soon', 'open', 'resolved'].indexOf(a.st) - ['overdue', 'soon', 'open', 'resolved'].indexOf(b.st));
@@ -46,7 +47,7 @@
         + '<button class="icon-btn sm" data-act="plan.removeFs" data-id="' + esc(f.id) + '" title="删除">' + icon('trash') + '</button></div>'
         + '<textarea class="input fs-note" rows="1" data-fs="note" data-id="' + esc(f.id) + '" placeholder="细节：读者看到了什么、真相是什么、怎么回收">' + esc(f.note) + '</textarea>'
         + '<div class="fs-meta" data-id="' + esc(f.id) + '"><label>埋于 ' + chapterSelect(p, 'plantedIn', f.plantedIn, '（未指定）') + '</label>'
-        + '<label>计划第 <input class="input xs" type="number" min="1" data-fs="dueChapter" data-id="' + esc(f.id) + '" value="' + (f.dueChapter || '') + '" placeholder="?"> 章回收</label>'
+        + '<label>' + (en() ? 'Pay off by Ch. ' : '计划第 ') + '<input class="input xs" type="number" min="1" data-fs="dueChapter" data-id="' + esc(f.id) + '" value="' + (f.dueChapter || '') + '" placeholder="?">' + (en() ? '' : ' 章回收') + '</label>'
         + (f.resolvedIn ? '<label>回收于 ' + chapterSelect(p, 'resolvedIn', f.resolvedIn, '（未指定）') + '</label>' : '') + '</div></div>').join('');
       const cnt = k => p.foreshadows().filter(f => k === 'done' ? f.resolvedIn : k === 'active' ? !f.resolvedIn : true).length;
       return '<header class="page-head"><div><h1>大纲与伏笔</h1><p class="muted">分卷 → 章节 → 细纲，一眼看清全书走向；伏笔埋下就登记，到期前提醒你回收。</p></div></header>'

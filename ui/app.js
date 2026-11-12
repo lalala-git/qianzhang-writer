@@ -226,7 +226,7 @@
       nav.innerHTML = GROUPS.filter(g => !mini || g.k === 'write' || g.k === 'more').map(g => { const first = g.pages.find(k => P[k]), badge = g.pages.map(k => P[k] && P[k].badge && this.project ? P[k].badge(this) : 0).find(Boolean);
         return first ? '<a href="#/' + first + '" class="nav-item' + (cur === g ? ' on' : '') + '" data-group="' + g.k + '">' + UI.icon(g.icon) + '<span data-short="' + g.label + '">' + g.label + '</span>' + (badge ? '<em class="nav-badge" title="已逾期的伏笔">' + badge + '</em>' : '') + '</a>' : ''; }).join('');
       if (this.project && this.noBook()) document.getElementById('project-switch').innerHTML = '<span class="ps-label">还没有作品</span><span class="ps-caret">' + UI.icon('chevron') + '</span>';
-      else if (this.project) document.getElementById('project-switch').innerHTML = '<span class="ps-label">当前作品</span><span class="ps-title" title="' + UI.esc(this.project.title) + '">' + UI.esc(this.project.title) + '</span><span class="ps-caret">' + UI.icon('chevron') + '</span>';
+      else if (this.project) document.getElementById('project-switch').innerHTML = '<span class="ps-label">当前作品</span><span class="ps-title" data-no-i18n title="' + UI.esc(this.project.title) + '">' + UI.esc(this.project.title) + '</span><span class="ps-caret">' + UI.icon('chevron') + '</span>';
       document.getElementById('theme-btn').innerHTML = UI.icon(this.theme() === 'dark' ? 'sun' : 'moon');
     },
     bind: function () {

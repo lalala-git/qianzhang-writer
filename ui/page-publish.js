@@ -28,7 +28,7 @@
         + '<section class="panel pb-main"><div class="pb-ctl"><div class="aw-seg">' + plats + '</div><select class="select sm" id="pb-range">' + ranges.map(r => '<option value="' + esc(r[0]) + '"' + (r[0] === o.range ? ' selected' : '') + '>' + esc(r[1]) + '</option>').join('') + '</select>'
         + '<span class="muted small">' + esc(P.tip) + '</span><span class="grow"></span><span class="pill">' + list.length + ' 章 · ' + total.toLocaleString() + ' 字</span></div>'
         + '<div class="pb-grid"><div><h3>发布前自查 ' + (issues.length ? '<em class="nav-badge">' + issues.length + '</em>' : '') + '</h3>'
-        + (issues.length ? '<ul class="pb-issues">' + issues.slice(0, 60).map(x => '<li class="' + x.kind + '"><a href="#/write/' + encodeURIComponent(x.chapterId) + '">' + esc(x.title) + '</a><span>' + esc(x.text) + '</span></li>').join('') + '</ul>'
+        + (issues.length ? '<ul class="pb-issues">' + issues.slice(0, 60).map(x => '<li class="' + x.kind + '"><a href="#/write/' + encodeURIComponent(x.chapterId) + '" data-no-i18n>' + esc(x.title) + '</a><span>' + esc(x.text) + '</span></li>').join('') + '</ul>'
           : '<p class="pb-ok">' + icon('check') + ' 没发现问题，可以发了</p>')
         + '</div><div><h3>预览</h3><pre class="pb-preview" id="pb-preview">' + esc(C.publishText(p, list.slice(0, 2), o.platform).slice(0, 1600)) + (list.length > 2 ? '\n\n……' : '') + '</pre></div></div>'
         + '<div class="row pb-actions"><button class="btn primary" data-act="publish.copy"' + (list.length ? '' : ' disabled') + '>' + icon('upload') + '复制' + (list.length > 1 ? '第一章' : '') + '</button><button class="btn" data-act="publish.download"' + (list.length ? '' : ' disabled') + '>' + icon('download') + '导出 txt</button>'

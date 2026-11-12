@@ -58,6 +58,12 @@ const { t } = QZI18N;
 assert.strictEqual(t('入正典'), 'Add to canon');
 assert.strictEqual(t('撤销'), 'Undo');
 assert.strictEqual(t('已移进回收站：《{title}》', { title: 'X' }), 'Moved to Trash: «X»');
+/* 半中半英的拼接句改用整句模板；万字换算成英文数字 */
+assert.strictEqual(t('第 3 / 12 章'), 'Ch. 3 of 12');
+assert.strictEqual(t('计划第 5 章回收 · 现写到第 3 章'), 'Pay off by Ch. 5 · now at Ch. 3');
+assert.strictEqual(t('下一站 1 万字'), 'Next stop 10k chars');
+assert.strictEqual(t('已达成 100 万字'), 'Achieved 1M chars');
+assert.strictEqual(t('快到期'), 'Due soon');
 assert.ok(!/[\u4e00-\u9fff]/.test(t('已移进回收站：《青崖》').replace('青崖', '')), t('已移进回收站：《青崖》'));
 for (const [zh, en] of QZI18N.templates) assert.strictEqual(t(zh, {}), en, zh);
 QZI18N._setLang('zh');
