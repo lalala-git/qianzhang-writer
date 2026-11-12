@@ -4,6 +4,20 @@
 
 ## [未发布 / Unreleased]
 
+### English
+
+- Write page toolbar: button labels now collapse to icons only when they really do not fit (any window width, either language, check panel open or closed); on very narrow windows the toolbar wraps to two lines instead of pushing buttons off-screen.
+- English interface: your own chapter titles, outlines, book titles and card summaries are no longer half machine-translated (e.g. "Chapter 1 半张剑谱"); fixed half-Chinese phrases such as the chapter counter, foreshadowing due line, word milestones ("10k chars"), "Due soon" / "Overdue" tags and the delete-work button; long menu items wrap instead of pushing shortcuts out of the menu.
+- Small labels (tags, current-work label, sidebar tagline and similar) are now at least 12px for easier reading of Chinese text.
+- Narrow windows: the manuscript page no longer gets cut off on the right.
+
+### 中文
+
+- 写作页顶栏：按实际宽度判断，放不下时才把按钮收成只有图标（不管窗口多宽、中英文、开不开检查面板）；窗口很窄时折成两行，不再把按钮挤出屏幕。
+- 英文界面：你自己写的章节标题、细纲、书名和设定简介不再被半翻译；修正章序、伏笔到期、字数里程碑、「快到期 / 已逾期」标签和删除作品按钮里的中英混杂；菜单里的长英文项自动换行，快捷键不再被挤出菜单。
+- 标签、「当前作品」、侧栏口号等小字至少 12px，中文更好认。
+- 窄窗口下稿纸右边不再被裁掉一截。
+
 ## [1.1.0] - 2026-10-31
 
 ### English
