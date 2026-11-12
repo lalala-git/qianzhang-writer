@@ -58,7 +58,7 @@ Additional contributor: **[Codex (OpenAI)](https://github.com/codex)** — docum
 - **Your work stays safe.** It is saved on your computer with rolling automatic backups. A deleted work goes to a trash you can restore from in Settings, and you can export a backup file or restore from one.
 - **Small helpers for long sessions.** Ctrl+K jumps to any chapter, setting or page. Ctrl+\ hides the sidebar and chapter list for a wider page, and a dark-room focus mode (Ctrl+Shift+F) hides the rest. When a chapter will not come, there is a corner for tearing up a bad draft or popping bubble wrap.
 - **Its own window (Windows).** The portable app opens a Qianzhang window; the taskbar and tray icons belong to Qianzhang. Closing the window, or choosing "退出千章" (Quit) from the tray, saves unsaved writing and quits. Opening it again while it is already running brings that window forward. If the WebView2 Runtime is missing, a notice explains how to install it from Microsoft and Qianzhang opens in a browser window for this session; then use the tray or the "Quit Qianzhang" button in the sidebar to save and quit.
-- **Chinese or English.** Chinese by default; switch in 设置 (Settings) → 界面语言 · Language. The screenshots here show the English interface.
+- **Chinese or English.** Chinese by default; switch in 设置 (Settings) → 界面语言 · Language. The screenshots here show the Chinese interface.
 - **Optional AI.** Connect a service of your own for an AI editor, writer's-block help, continue/polish, a co-writer and character chat. Nothing is sent until you connect one; what is sent and how the key is stored is explained below.
 - **A new-version reminder (1.1.0).** Shortly after start-up Qianzhang asks GitHub once whether a newer release exists. If so, a small note appears in the sidebar and clicking it opens the release page. Nothing is downloaded or replaced for you, it stays silent when you are offline, none of your writing is sent, and one switch in Settings turns it off.
 
@@ -201,7 +201,7 @@ To report a problem, [open an issue](https://github.com/lalala-git/qianzhang-wri
 - **稿子不会丢。** 作品保存在你的电脑上，并有滚动的自动备份。删掉的作品先进回收站，可以在设置里恢复；也能导出备份文件，或从备份恢复。
 - **长时间写作的小帮手。** Ctrl+K 跳到任意章节、设定或页面；Ctrl+\ 收起侧边栏和目录，让正文铺开；小黑屋专注模式（Ctrl+Shift+F）把其他东西都藏起来；卡文的时候，还有个角落可以撕烂废稿，或者捏捏泡泡纸。
 - **自己的窗口（Windows）。** 便携版用千章自己的窗口打开，任务栏和托盘图标也是千章的。关窗口或在托盘里选「退出千章」，会先把还没保存的内容存好再退出。已经打开时再双击，会把现有窗口调到前面。缺少 WebView2 运行时，会说明怎么从微软官网安装，这次先用浏览器窗口打开；这种情况下请用托盘或侧栏里的「退出千章」保存并退出。
-- **中文或 English。** 中文默认，在 设置 → 界面语言 · Language 切换；本说明里的截图是英文界面。
+- **中文或 English。** 中文默认，在 设置 → 界面语言 · Language 切换；本说明里的截图是中文界面。
 - **可选的 AI。** 连接你自己的服务，就有 AI 责编、卡文助手、续写润色、陪写和角色聊天。没连接之前不会发送任何内容；会发送什么、密钥怎么存，见下方说明。
 - **新版本提醒（1.1.0）。** 启动后不久，千章会向 GitHub 查一次有没有更新的发布；有的话，侧栏里出现一条小提示，点一下打开发布页面。它不会替你下载或替换任何东西，断网时不出声，也不发送你的任何文字，设置里一个开关就能关掉。
 
