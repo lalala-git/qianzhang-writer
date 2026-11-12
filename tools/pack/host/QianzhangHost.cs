@@ -115,6 +115,11 @@ static class Program {
     Engine.Start(false); /* 原来的方式：本地服务自己开 Edge/Chrome 窗口或默认浏览器，并管退出 */
   }
 
+  /* 完整的多尺寸图标（打包时作为资源放进来）：窗口和托盘按需要的尺寸取对应的那一张，小图标不再是 32px 缩小来的 */
+  internal static System.Drawing.Icon AppIcon(Size size) {
+    try { using (Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream("qz.icon.ico")) if (s != null) return size.IsEmpty ? new System.Drawing.Icon(s) : new System.Drawing.Icon(s, size); } catch (Exception e) { Log("读取图标失败 " + e.Message); }
+    try { return System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (Exception) { return null; }
+  }
   internal static void OpenExternal(string url) { try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); } catch (Exception e) { Log("打开链接失败 " + e.Message); } }
   internal static void Log(string s) { try { if (LogPath != null) File.AppendAllText(LogPath, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + s + Environment.NewLine, Encoding.UTF8); } catch (Exception) { } }
   static string Md5(string s) { using (var m = MD5.Create()) return BitConverter.ToString(m.ComputeHash(Encoding.UTF8.GetBytes(s))).Replace("-", "").Substring(0, 16); }
@@ -183,7 +188,7 @@ sealed class MainForm : Form {
   public MainForm(Engine engine) {
     this.engine = engine;
     Text = "千章";
-    try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (Exception) { }
+    var appIcon = Program.AppIcon(Size.Empty); if (appIcon != null) Icon = appIcon;
     StartPosition = FormStartPosition.CenterScreen;
     Size = new Size(1320, 880);
     MinimumSize = new Size(720, 480);
@@ -192,7 +197,7 @@ sealed class MainForm : Form {
     web.Dock = DockStyle.Fill;
     web.DefaultBackgroundColor = BackColor;
     Controls.Add(web);
-    tray.Icon = Icon; tray.Text = "千章";
+    tray.Icon = Program.AppIcon(SystemInformation.SmallIconSize) ?? Icon; tray.Text = "千章";
     var menu = new ContextMenuStrip();
     menu.Items.Add("打开千章", null, (s, e) => ShowMain());
     menu.Items.Add("退出千章", null, (s, e) => { Program.Log("托盘：退出"); Close(); });

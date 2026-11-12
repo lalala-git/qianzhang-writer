@@ -95,6 +95,6 @@ async function buildHost(engine, exe, V) {
     '/win32icon:' + path.join(__dirname, 'icon.ico'), '/win32manifest:' + path.join(host, 'app.manifest'),
     '/r:System.Windows.Forms.dll', '/r:System.Drawing.dll', '/r:' + core, '/r:' + forms,
     '/resource:' + engine + ',qz.qianzhang-engine.exe', '/resource:' + core + ',qz.Microsoft.Web.WebView2.Core.dll',
-    '/resource:' + forms + ',qz.Microsoft.Web.WebView2.WinForms.dll', '/resource:' + loader + ',qz.WebView2Loader.dll',
+    '/resource:' + forms + ',qz.Microsoft.Web.WebView2.WinForms.dll', '/resource:' + loader + ',qz.WebView2Loader.dll', '/resource:' + path.join(__dirname, 'icon.ico') + ',qz.icon.ico',
     path.join(host, 'QianzhangHost.cs'), info], { stdio: 'inherit' });
 }
