@@ -17,8 +17,10 @@ English · [简体中文](#简体中文)
 **[Download Qianzhang for Windows x64 (portable ZIP) from Releases](https://github.com/lalala-git/qianzhang-writer/releases/latest)** — the release page also lists SHA-256 checksums.
 
 1. Extract the entire ZIP into a folder where you can save files.
-2. Double-click `Qianzhang.exe` (if Windows SmartScreen stops it, see [below](#windows-smartscreen-and-security-software)). Edge or Chrome is recommended for the standalone app window. You do not need to install Node.js or configure an API key to use the local writing tools.
+2. Double-click `Qianzhang.exe` (if Windows SmartScreen stops it, see [below](#windows-smartscreen-and-security-software)). It opens in its own window. You do not need to install Node.js or configure an API key to use the local writing tools.
 3. Choose **新建作品 (New work)** and start writing. The app starts in Chinese; switch to English in **设置 (Settings) → 界面语言 · Language**.
+
+The portable app needs the Microsoft Edge WebView2 Runtime and .NET Framework 4.6.2 or later; both usually already come with Windows 10 and 11. If WebView2 is missing, Qianzhang explains how to install it from Microsoft and opens in a browser window for this session.
 
 Keep the `data` folder beside the exe: it contains your works, backups and app settings. Move the whole folder when moving computers; when upgrading, close Qianzhang and replace the exe while keeping `data`. macOS, Linux and developers can [run from source](#install-and-run-from-source).
 
@@ -40,7 +42,7 @@ Additional contributor: **[Codex (OpenAI)](https://github.com/codex)** — docum
 
 ## Platforms and what has been verified
 
-- **Windows x64**: portable exe, built and launched on a real Windows PC.
+- **Windows x64**: portable exe, built and launched on a real Windows PC. It needs the WebView2 Runtime and .NET Framework 4.6.2 or later (usually already present on Windows 10 and 11).
 - **macOS and Linux**: no packaged app; [run from source](#install-and-run-from-source) with Node.js. The CI tests run on GitHub's Linux, macOS and Windows runners, and the `source-packages` workflow builds macOS / Linux source packages with a start script (`start.sh`; `Qianzhang.command` on macOS) after the tests pass. These are cloud runners only: Qianzhang has **not been tested on real macOS or Linux desktop hardware**.
 - **AI features**: tested only against simulated OpenAI-compatible responses in the automated tests, **not verified against a real AI service**. Provider-specific behaviour (DeepSeek, OpenAI, Ollama…) may differ; please report problems.
 
@@ -55,7 +57,7 @@ Additional contributor: **[Codex (OpenAI)](https://github.com/codex)** — docum
 - **Ready to publish.** Pick a platform preset, run the pre-publish check, then copy a chapter or export it as txt. Chapters you mark as published leave your stock count.
 - **Your work stays safe.** It is saved on your computer with rolling automatic backups. A deleted work goes to a trash you can restore from in Settings, and you can export a backup file or restore from one.
 - **Small helpers for long sessions.** Ctrl+K jumps to any chapter, setting or page. A dark-room focus mode (Ctrl+Shift+F) hides the rest. When a chapter will not come, there is a corner for tearing up a bad draft or popping bubble wrap.
-- **Closing the window ends the program (Windows).** Close the standalone window and Qianzhang quits. If it had to open in your default browser, the tray icon and the "Quit Qianzhang" button in the sidebar save your work and quit.
+- **Its own window (Windows).** The portable app opens a Qianzhang window; the taskbar and tray icons belong to Qianzhang. Closing the window, or choosing "退出千章" (Quit) from the tray, saves unsaved writing and quits. Opening it again while it is already running brings that window forward. If the WebView2 Runtime is missing, a notice explains how to install it from Microsoft and Qianzhang opens in a browser window for this session; then use the tray or the "Quit Qianzhang" button in the sidebar to save and quit.
 - **Chinese or English.** Chinese by default; switch in 设置 (Settings) → 界面语言 · Language. The screenshots here show the English interface.
 - **Optional AI.** Connect a service of your own for an AI editor, writer's-block help, continue/polish, a co-writer and character chat. Nothing is sent until you connect one; what is sent and how the key is stored is explained below.
 - **A new-version reminder (1.1.0).** Shortly after start-up Qianzhang asks GitHub once whether a newer release exists. If so, a small note appears in the sidebar and clicking it opens the release page. Nothing is downloaded or replaced for you, it stays silent when you are offline, none of your writing is sent, and one switch in Settings turns it off.
@@ -88,9 +90,13 @@ On first launch the shelf is empty: click 新建作品 (New work). The source se
 
 ## Windows single-file program (optional)
 
-For Windows packaging, Node.js 22 or newer is recommended; the Node.js 18 requirement for running from source does not apply to packaging. The build uses Node SEA and downloads pinned `rcedit@4.0.1` and `postject@1.0.0-alpha.6` through npm/npx, so internet access is required during the build. Running from source does not require these tools. These are build requirements, not a claim that the exe has been tested with every Node version.
+For Windows packaging, Node.js 22 or newer is recommended; the Node.js 18 requirement for running from source does not apply to packaging. The build uses Node SEA, compiles a small window host with the `csc.exe` that ships with .NET Framework 4.x, and downloads pinned `rcedit@4.0.1`, `postject@1.0.0-alpha.6` and a fixed version of the Microsoft.Web.WebView2 SDK from NuGet, so internet access is required during the build. Running from source does not require these tools. These are build requirements, not a claim that the exe has been tested with every Node version.
 
-On Windows, `node tools/pack/build.js` produces `dist/Qianzhang.exe` (with an icon and no console window). Double-click it and it opens a standalone 千章 window using the installed Edge or Chrome (no address bar or tabs); closing that window quits the app. Double-clicking again only opens another window instead of starting a second copy. If neither browser is installed, or the page in the app window has not started within 20 seconds (for example because security software blocked it), it falls back to the default browser; closing the page then does not quit the app. In that case Windows first shows a note saying so (when no browser is found), a 千章 icon appears in the notification area (tray), and the page shows a "Quit Qianzhang" button at the bottom of the sidebar: use either the button or the tray icon's menu → 退出千章 to save and quit. When started from the exe, the button is also there in the standalone window. The app looks for a free port starting at 7811, so it does not clash with a development server on 7801. Run from the repository's `dist/`, it uses the repository's `data/`; copied elsewhere, it keeps works in a `data/` folder next to the exe. Logs and window settings live in `data/app/`, separate from your works. If the window stays blank, the exe's folder probably carries a low-integrity label (the app shows a notice); copy the exe elsewhere or run `icacls Qianzhang.exe /setintegritylevel M`. Works and backups are never packed into the exe. The script runs on Windows only; on macOS / Linux use `node server/server.js .` as above.
+On Windows, `node tools/pack/build.js` produces `dist/Qianzhang.exe` (with an icon and no console window). Double-click it and Qianzhang opens in its own window; the window, taskbar and tray belong to Qianzhang. Closing the window saves unsaved writing (it waits briefly for that to finish) and then quits. The tray menu has "打开千章" and "退出千章". Opening the exe again while it is already running brings the existing window forward instead of starting a second copy. The window remembers its position and size.
+
+The portable app needs the WebView2 Runtime and .NET Framework 4.6.2 or later (both usually already present on Windows 10 and 11). If WebView2 is missing, Qianzhang shows a Chinese notice and can open Microsoft's download page, then falls back for this session to an Edge or Chrome app window, or to the default browser if those are also missing. In that fallback, closing the page does not quit the app: use the tray or the "Quit Qianzhang" button at the bottom of the sidebar. Set `QZ_PACK_EDGE=1` to build only that older Edge/Chrome-window exe.
+
+The app looks for a free port starting at 7811, so it does not clash with a development server on 7801. Run from the repository's `dist/`, it uses the repository's `data/`; copied elsewhere, it keeps works in a `data/` folder next to the exe. Logs and window settings live in `data/app/`, separate from your works. If the window stays blank, the exe's folder probably carries a low-integrity label (the app shows a notice, and the window host also tries to clear the label); copy the exe elsewhere or run `icacls Qianzhang.exe /setintegritylevel M`. Works and backups are never packed into the exe. The icon is `tools/pack/icon.ico`, built from the SVG files in `tools/pack/icon/` by `python tools/pack/icon/make-icon.py` (see CONTRIBUTING). The script runs on Windows only; on macOS / Linux use `node server/server.js .` as above.
 
 ## Pages
 
@@ -116,7 +122,7 @@ server/keystore.js    encrypted storage for the AI key (DPAPI on Windows, AES-GC
 core/craft.js         writing tools: streaks, check-up, canon, aliases, AI prompts
 ui/                   interface: app.js shell, one page-*.js per page, i18n.js Chinese/English, style.css
 workspace/index.html  entry page
-tools/pack/           Windows single-file packaging
+tools/pack/           Windows packaging: WebView2 window host, icon sources, build script
 tests/                tests
 ```
 
@@ -154,8 +160,10 @@ To report a problem, [open an issue](https://github.com/lalala-git/qianzhang-wri
 **[到 Releases 页面下载千章 Windows x64 便携版 ZIP](https://github.com/lalala-git/qianzhang-writer/releases/latest)**，页面上同时列出 SHA-256 校验值。
 
 1. 将整个 ZIP 解压到可以保存文件的文件夹里。
-2. 双击 `Qianzhang.exe`（被 Windows SmartScreen 拦下时见[下文](#windows-smartscreen-与安全软件)）。建议已安装 Edge 或 Chrome，以便使用独立应用窗口。本地写作功能无需安装 Node.js，也无需配置 API 密钥。
+2. 双击 `Qianzhang.exe`（被 Windows SmartScreen 拦下时见[下文](#windows-smartscreen-与安全软件)）。程序用自己的窗口打开。本地写作功能无需安装 Node.js，也无需配置 API 密钥。
 3. 选择 **新建作品** 开始写。新安装默认中文，可在 **设置 → 界面语言 · Language** 切换 English。
+
+便携版需要本机已有 Microsoft Edge WebView2 运行时和 .NET Framework 4.6.2 或更新版本；Windows 10 和 11 通常已经自带。如果缺少 WebView2，千章会说明怎么从微软官网安装，这次先用浏览器窗口打开。
 
 请保留 exe 旁边的 `data` 文件夹，作品、备份和程序设置都在其中。换电脑时搬走整个文件夹；升级时先关闭千章，再替换 exe，保留 `data`。macOS、Linux 和开发者可按下方说明从源码启动。
 
@@ -177,7 +185,7 @@ To report a problem, [open an issue](https://github.com/lalala-git/qianzhang-wri
 
 ## 支持的平台与验证范围
 
-- **Windows x64**：便携版 exe，已在真实 Windows 电脑上构建并启动过。
+- **Windows x64**：便携版 exe，已在真实 Windows 电脑上构建并启动过。运行需要 WebView2 运行时和 .NET Framework 4.6.2 或更新版本（Windows 10 和 11 通常已经自带）。
 - **macOS 和 Linux**：没有打包程序，请[从源码启动](#从源码安装与启动)（需要 Node.js）。CI 会在 GitHub 的 Linux、macOS 和 Windows 机器上跑测试，`source-packages` 工作流在测试通过后打出带启动脚本的 macOS / Linux 源码包（`start.sh`，macOS 另有 `Qianzhang.command`）。这些都只是云端机器：**没有在真实的 macOS 或 Linux 桌面硬件上测试过**。
 - **AI 功能**：只在自动化测试里用模拟的 OpenAI 兼容响应验证过，**没有拿真实的 AI 服务验证**。不同服务商（DeepSeek、OpenAI、Ollama……）的表现可能不同，遇到问题欢迎反馈。
 
@@ -192,7 +200,7 @@ To report a problem, [open an issue](https://github.com/lalala-git/qianzhang-wri
 - **发布前准备好。** 选一个平台预设，做一遍发布前自查，再复制单章或导出 txt。标成已发布的章节会从存稿里扣掉。
 - **稿子不会丢。** 作品保存在你的电脑上，并有滚动的自动备份。删掉的作品先进回收站，可以在设置里恢复；也能导出备份文件，或从备份恢复。
 - **长时间写作的小帮手。** Ctrl+K 跳到任意章节、设定或页面；小黑屋专注模式（Ctrl+Shift+F）把其他东西都藏起来；卡文的时候，还有个角落可以撕烂废稿，或者捏捏泡泡纸。
-- **关窗就退出（Windows）。** 关掉独立窗口，千章就退出。如果只能用默认浏览器打开，右下角托盘图标和侧栏里的「退出千章」按钮会先保存再退出。
+- **自己的窗口（Windows）。** 便携版用千章自己的窗口打开，任务栏和托盘图标也是千章的。关窗口或在托盘里选「退出千章」，会先把还没保存的内容存好再退出。已经打开时再双击，会把现有窗口调到前面。缺少 WebView2 运行时，会说明怎么从微软官网安装，这次先用浏览器窗口打开；这种情况下请用托盘或侧栏里的「退出千章」保存并退出。
 - **中文或 English。** 中文默认，在 设置 → 界面语言 · Language 切换；本说明里的截图是英文界面。
 - **可选的 AI。** 连接你自己的服务，就有 AI 责编、卡文助手、续写润色、陪写和角色聊天。没连接之前不会发送任何内容；会发送什么、密钥怎么存，见下方说明。
 - **新版本提醒（1.1.0）。** 启动后不久，千章会向 GitHub 查一次有没有更新的发布；有的话，侧栏里出现一条小提示，点一下打开发布页面。它不会替你下载或替换任何东西，断网时不出声，也不发送你的任何文字，设置里一个开关就能关掉。
@@ -225,9 +233,13 @@ node server/server.js .
 
 ## Windows 单文件程序（可选）
 
-Windows 打包建议使用 Node.js 22 或更新版本；Node.js 18 的源码启动要求不适用于单文件打包。构建使用 Node SEA，并通过 npm/npx 联网获取固定版本的 `rcedit@4.0.1` 和 `postject@1.0.0-alpha.6`；源码启动不需要这些工具。此处是构建要求说明，不表示已经完成每个 Node 版本的 exe 验证。
+Windows 打包建议使用 Node.js 22 或更新版本；Node.js 18 的源码启动要求不适用于单文件打包。构建使用 Node SEA，用本机自带的 `csc.exe`（.NET Framework 4.x）编译一个小的窗口外壳，并通过 npm/npx 和 NuGet 联网获取固定版本的 `rcedit@4.0.1`、`postject@1.0.0-alpha.6` 和 Microsoft.Web.WebView2 SDK；源码启动不需要这些工具。此处是构建要求说明，不表示已经完成每个 Node 版本的 exe 验证。
 
-在 Windows 上运行 `node tools/pack/build.js`，会生成 `dist/Qianzhang.exe`（带图标，不弹命令行窗口）。双击后它用本机的 Edge 或 Chrome 打开一个独立的「千章」窗口（没有地址栏和标签页）；关掉这个窗口，千章就退出。再次双击只会再打开一个窗口，不会重复启动。两种浏览器都没有、或者应用窗口里的页面 20 秒内没能运行（比如被安全软件拦截）时，改用默认浏览器打开，这时关页面不会自动退出：没找到浏览器时会先弹窗说明，右下角托盘会出现千章图标，页面侧栏底部也会出现「退出千章」按钮，点按钮或托盘图标菜单里的「退出千章」即可保存并退出。由 exe 启动时，独立窗口里也有这个按钮。程序从 7811 起找空闲端口，不和开发用的 7801 冲突。从仓库的 `dist/` 里运行时，它直接用仓库的 `data/`；单独拷走时，作品存在 exe 旁边的 `data/` 里。日志和窗口设置放在 `data/app/`，与作品分开。如果窗口一片空白，多半是 exe 所在文件夹带“低完整性”标记（程序会弹窗提示），把 exe 复制到别处，或运行 `icacls Qianzhang.exe /setintegritylevel M`。作品和备份不会被打进 exe。这个脚本只能在 Windows 上运行，在 macOS / Linux 上请直接用上面的 `node server/server.js .`。
+在 Windows 上运行 `node tools/pack/build.js`，会生成 `dist/Qianzhang.exe`（带图标，不弹命令行窗口）。双击后它用自己的窗口打开千章，窗口、任务栏和托盘都属于千章。关窗口会先把还没保存的内容存好（稍等片刻），再退出。托盘菜单里有「打开千章」和「退出千章」。已经打开时再双击，会把现有窗口调到前面，不会再开一份。窗口会记住位置和大小。
+
+便携版需要 WebView2 运行时和 .NET Framework 4.6.2 或更新版本（Windows 10 和 11 通常已经自带）。如果缺少 WebView2，千章会弹出中文说明，并可打开微软的下载页面，这次先退回用 Edge 或 Chrome 的应用窗口；这两种浏览器都没有时，再用默认浏览器打开。退回这种方式时，关页面不会退出千章：请用托盘或侧栏底部的「退出千章」保存并退出。打包时设 `QZ_PACK_EDGE=1`，则只打出原来的 Edge/Chrome 窗口版。
+
+程序从 7811 起找空闲端口，不和开发用的 7801 冲突。从仓库的 `dist/` 里运行时，它直接用仓库的 `data/`；单独拷走时，作品存在 exe 旁边的 `data/` 里。日志和窗口设置放在 `data/app/`，与作品分开。如果窗口一片空白，多半是 exe 所在文件夹带“低完整性”标记（程序会弹窗提示，窗口外壳也会尝试清除这个标记），把 exe 复制到别处，或运行 `icacls Qianzhang.exe /setintegritylevel M`。作品和备份不会被打进 exe。图标是 `tools/pack/icon.ico`，由 `tools/pack/icon/` 里的 SVG 经 `python tools/pack/icon/make-icon.py` 生成（见 CONTRIBUTING）。这个脚本只能在 Windows 上运行，在 macOS / Linux 上请直接用上面的 `node server/server.js .`。
 
 ## 页面
 
@@ -253,7 +265,7 @@ server/keystore.js    AI 密钥加密保存（Windows 用 DPAPI，其他系统�
 core/craft.js         网文工具：连更统计、体检、正典、别名、AI 提示词
 ui/                   界面：app.js 外壳，page-*.js 每页一个文件，i18n.js 中英文，style.css 样式
 workspace/index.html  入口页面
-tools/pack/           Windows 单文件打包
+tools/pack/           Windows 打包：WebView2 窗口外壳、图标源文件、打包脚本
 tests/                测试
 ```
 

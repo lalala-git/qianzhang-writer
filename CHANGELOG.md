@@ -6,7 +6,8 @@
 
 ### English
 
-- Qianzhang.exe now opens its own window (built on the Microsoft Edge WebView2 runtime that ships with Windows 10/11) instead of an Edge app window: the window and taskbar icon belong to Qianzhang, closing the window quits everything, and works stay where they were. If the runtime is missing, Qianzhang explains how to get it and opens in the browser window as before.
+- Qianzhang.exe now opens its own window (a small host built with .NET Framework, showing the UI in the Microsoft Edge WebView2 runtime that usually already ships with Windows 10/11): the window, taskbar and tray icon belong to Qianzhang. Closing the window or choosing "退出千章" from the tray saves unsaved writing and quits. Opening the exe again while it is already running brings the existing window forward. The window remembers its position and size. Works stay where they were. Needs the WebView2 Runtime and .NET Framework 4.6.2 or later. If the runtime is missing, a Chinese notice explains how to install it from Microsoft and Qianzhang opens in a browser window for this session. Set `QZ_PACK_EDGE=1` when packaging to build only the older Edge/Chrome-window exe.
+- New app icon: a pale sky-blue stack of pages with a few lines of text and an orange cursor, used for the exe, window, taskbar, tray and the in-app icon. Sources are the SVG files in `tools/pack/icon/`; `python tools/pack/icon/make-icon.py` rebuilds `tools/pack/icon.ico`.
 - Write page toolbar: button labels now collapse to icons only when they really do not fit (any window width, either language, check panel open or closed); on very narrow windows the toolbar wraps to two lines instead of pushing buttons off-screen.
 - English interface: your own chapter titles, outlines, book titles and card summaries are no longer half machine-translated (e.g. "Chapter 1 半张剑谱"); fixed half-Chinese phrases such as the chapter counter, foreshadowing due line, word milestones ("10k chars"), "Due soon" / "Overdue" tags and the delete-work button; long menu items wrap instead of pushing shortcuts out of the menu.
 - Small labels (tags, current-work label, sidebar tagline and similar) are now at least 12px for easier reading of Chinese text.
@@ -14,7 +15,8 @@
 
 ### 中文
 
-- Qianzhang.exe 现在用自己的窗口（基于 Windows 10/11 自带的 Microsoft Edge WebView2 运行时），不再借用 Edge 的应用窗口：窗口和任务栏图标都是千章自己的，关窗口就完全退出，作品位置不变。电脑缺少这个运行时时会说明怎么安装，这次先照旧用浏览器窗口打开。
+- Qianzhang.exe 现在用自己的窗口（用 .NET Framework 编译的小外壳，界面显示在 Windows 10/11 通常已自带的 Microsoft Edge WebView2 运行时里）：窗口、任务栏和托盘图标都是千章自己的。关窗口或在托盘里选「退出千章」，会先把还没保存的内容存好再退出。已经打开时再双击，会把现有窗口调到前面。窗口会记住位置和大小。作品位置不变。运行需要 WebView2 运行时和 .NET Framework 4.6.2 或更新版本。缺少运行时会弹出中文说明，并可打开微软的下载页面，这次先用浏览器窗口打开。打包时设 `QZ_PACK_EDGE=1`，则只打出原来的 Edge/Chrome 窗口版。
+- 新图标：淡天蓝底上叠着几张纸，前面有几行字和一个橙色光标，用于 exe、窗口、任务栏、托盘和页面小图标。源文件是 `tools/pack/icon/` 里的 SVG，用 `python tools/pack/icon/make-icon.py` 生成 `tools/pack/icon.ico`。
 - 写作页顶栏：按实际宽度判断，放不下时才把按钮收成只有图标（不管窗口多宽、中英文、开不开检查面板）；窗口很窄时折成两行，不再把按钮挤出屏幕。
 - 英文界面：你自己写的章节标题、细纲、书名和设定简介不再被半翻译；修正章序、伏笔到期、字数里程碑、「快到期 / 已逾期」标签和删除作品按钮里的中英混杂；菜单里的长英文项自动换行，快捷键不再被挤出菜单。
 - 标签、「当前作品」、侧栏口号等小字至少 12px，中文更好认。
