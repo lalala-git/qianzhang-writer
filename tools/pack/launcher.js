@@ -1,4 +1,5 @@
-/*! 千章 · Windows 桌面程序（Node SEA）：解压程序文件、启动本地服务、用 Edge/Chrome 的独立应用窗口打开；窗口关了就退出。
+/*! 千章 · Windows 本地服务（Node SEA）：解压程序文件、启动本地服务。平时由千章窗口外壳（tools/pack/host，WebView2）在后台启动（QZ_HOST）；
+ *  单独运行或没有 WebView2 时：用 Edge/Chrome 的独立应用窗口打开；窗口关了就退出。
  *  没有 Edge/Chrome 或窗口被拦截时改用默认浏览器，并提供托盘图标和页面里的「退出千章」 */
 'use strict';
 const fs = require('fs');
@@ -9,7 +10,7 @@ const { spawn, execFile } = require('child_process');
 const { createRequire } = require('module');
 const sea = require('node:sea');
 
-const exeDir = path.dirname(process.execPath);
+const exeDir = process.env.QZ_HOME ? path.resolve(process.env.QZ_HOME) : path.dirname(process.execPath); /* 由窗口外壳启动时，外壳告诉它 Qianzhang.exe 在哪 */
 const root = path.join(exeDir, 'qianzhang-app');
 const list = JSON.parse(sea.getAsset('__list__', 'utf8'));
 /* 作品放哪：从仓库 dist/ 里运行 → 用仓库的 data（开发者已有的书）；否则用 exe 旁边的 data；
@@ -83,6 +84,12 @@ function openDefault(url) { execFile('cmd', ['/c', 'start', '', url], { windowsH
 function useDefaultBrowser(url, why) {
   log(why + '，改用默认浏览器'); global.__qzMode = 'browser'; startTray(url); openDefault(url);
 }
+/** 窗口外壳模式：把页面地址写到标准输出告诉外壳；外壳一退出（标准输入断开）就跟着干净退出 */
+function hostSay(port, shared) { try { fs.writeSync(1, 'QZ_URL http://127.0.0.1:' + port + '/workspace/' + (shared ? ' shared' : '') + '\n'); } catch (e) { log('告诉窗口外壳地址失败', e); } }
+function followHost() {
+  const bye = () => global.__qzQuit('窗口外壳已关闭');
+  process.stdin.on('end', bye); process.stdin.on('close', bye); process.stdin.on('error', bye); process.stdin.resume();
+}
 function free(port) {
   return new Promise(ok => { const s = net.createServer().once('error', () => ok(false)).once('listening', () => s.close(() => ok(true))).listen(port, '127.0.0.1'); });
 }
@@ -144,7 +151,7 @@ async function watchAndExit(child) {
   try { const g = require('child_process').execFileSync('whoami', ['/groups'], { windowsHide: true, encoding: 'utf8' });
     if (/S-1-16-4096/.test(g)) { log('以低完整性运行'); lowIL = true; } } catch (e) {}
   /* 单实例：已经在运行就只再开（或聚焦）一个窗口 */
-  try { const old = JSON.parse(fs.readFileSync(lockFile, 'utf8')); if (old.port && await ping(old.port)) { log('已在运行，打开窗口', old.port); const u = 'http://127.0.0.1:' + old.port + '/workspace/', b = findBrowser();
+  try { const old = JSON.parse(fs.readFileSync(lockFile, 'utf8')); if (old.port && await ping(old.port)) { log('已在运行，打开窗口', old.port); if (process.env.QZ_HOST) { hostSay(old.port, true); setTimeout(() => process.exit(0), 300); return; } const u = 'http://127.0.0.1:' + old.port + '/workspace/', b = findBrowser();
     if (b) openWindow(u); else openDefault(u); setTimeout(() => process.exit(0), b ? 4000 : 1500); return; } } catch (e) {}
   /* 端口：7801 常被开发用的服务占着，程序从 7811 起找空闲端口，不和它抢 */
   let port = +process.env.QZ_PORT || 7811;
@@ -163,6 +170,7 @@ async function watchAndExit(child) {
   fs.writeFileSync(lockFile, JSON.stringify({ pid: process.pid, port }));
   const url = 'http://127.0.0.1:' + port + '/workspace/';
   log('千章已启动', url, '作品目录', path.join(dataDir, 'projects'));
+  if (process.env.QZ_HOST) { hostSay(port); followHost(); return; }
   if (process.env.QZ_NO_BROWSER) return;
   if (lowIL) { alert('千章所在的文件夹被标记为“低完整性”，在这里运行时浏览器窗口会是空白的。\n请把 Qianzhang.exe 连同 data 文件夹复制到别的位置再打开，或在该目录运行：icacls Qianzhang.exe /setintegritylevel M\n日志：' + logFile, true); }
   const t0 = Date.now(), child = winChild = openWindow(url);
